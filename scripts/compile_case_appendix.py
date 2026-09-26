@@ -16,16 +16,22 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import os
 import re
 from pathlib import Path
 
 SKILL_DIR = Path(__file__).resolve().parents[1]
-DEFAULT_ORIGINAL = Path(
-    "/Users/ivan/Library/CloudStorage/OneDrive-个人/文档/CodexProject/07-SkillLab/创意方法/Methods/02-原版案例库-758个官方案例.md"
-)
-DEFAULT_CASES = Path(
-    "/Users/ivan/Library/CloudStorage/OneDrive-个人/文档/CodexProject/07-SkillLab/创意方法/Methods/05-案例库数据.json"
-)
+
+# The case libraries live outside this Skill, in the workspace's 07-SkillLab tree.
+# Nothing here hardcodes a machine path: the default is derived from where this
+# Skill itself sits (…/<workspace>/02-skills-library/<category>/video-idea-system),
+# and `VIDEO_IDEA_CASE_LIBRARY_DIR` (or the --original / --cases flags) override it.
+CASE_LIBRARY_DIR = Path(
+    os.environ.get("VIDEO_IDEA_CASE_LIBRARY_DIR")
+    or (SKILL_DIR.parents[2] / "07-SkillLab" / "创意方法" / "Methods")
+).expanduser()
+DEFAULT_ORIGINAL = CASE_LIBRARY_DIR / "02-原版案例库-758个官方案例.md"
+DEFAULT_CASES = CASE_LIBRARY_DIR / "05-案例库数据.json"
 DEFAULT_OUT = SKILL_DIR / "references" / "案例附录.md"
 
 # Mapping sources that describe films or trailers, not advertising work.
@@ -98,9 +104,17 @@ def case_line(row: dict) -> str:
 
 def build(original: Path, cases: Path, out: Path, include_official_overlap: bool = False) -> dict:
     if not original.is_file():
-        raise FileNotFoundError(f"找不到原版案例库：{original}")
+        raise FileNotFoundError(
+            f"找不到原版案例库：{original}\n"
+            "  修法（任选其一）：\n"
+            "    VIDEO_IDEA_CASE_LIBRARY_DIR=<案例库所在目录> python3 scripts/compile_case_appendix.py\n"
+            "    python3 scripts/compile_case_appendix.py --original <02-原版案例库-758个官方案例.md 的路径>")
     if not cases.is_file():
-        raise FileNotFoundError(f"找不到案例库数据：{cases}")
+        raise FileNotFoundError(
+            f"找不到案例库数据：{cases}\n"
+            "  修法（任选其一）：\n"
+            "    VIDEO_IDEA_CASE_LIBRARY_DIR=<案例库所在目录> python3 scripts/compile_case_appendix.py\n"
+            "    python3 scripts/compile_case_appendix.py --cases <05-案例库数据.json 的路径>")
 
     cards = parse_original(original.read_text(encoding="utf-8"))
     modern = load_modern(cases, include_official_overlap)
