@@ -1,0 +1,130 @@
+[
+  {
+    "id": "simple-opinion-draft",
+    "prompt": "我有一段很散的个人观点草稿，帮我讨论清楚后写成一条能直接录的视频口播。",
+    "film_shape": "spoken-only",
+    "screens_with_picture": [],
+    "must_do": [
+      "先读取草稿并贡献方向判断",
+      "在对话中完成 Story Battle",
+      "生成按 Speech Beat 分段的 script.md",
+      "两个轴的结论都说清：片级形状（纯口播 / 口播 + 画面）与逐屏要不要画面",
+      "启动一段一屏、左文案右样张的念稿审阅页——纯口播也过这一页，只省略 --visual-plan"
+    ],
+    "must_not_do": [
+      "创建 Page Architecture",
+      "机械询问固定五项问卷",
+      "为每段强制生成画面契约或样张",
+      "给整片贴 simple / knowledge / mixed 内容类型标签当路由"
+    ]
+  },
+  {
+    "id": "idea-first-relay",
+    "prompt": "我已经在 _idea/current.md 里定了主张和结构，现在要把它变成能录的口播稿。",
+    "film_shape": "spoken+pictures",
+    "screens_with_picture": ["beat-03"],
+    "must_do": [
+      "读取 _idea/current.md 与段落脚本作为输入",
+      "只做承接校验：核对主张、受众、结构、素材边界，冲突回洞察与目标确认，不另立主张",
+      "把已定结构翻译成 Speech Beat，不重新提案",
+      "只为要画面的那一屏给内容契约，并用真素材拼一张粗糙静态样张",
+      "通过念稿与样张审阅后才宣布可录"
+    ],
+    "must_not_do": [
+      "重新 Battle 一版主张或重新竞争方向",
+      "因为切 Beat 而改动已定的拍数或结构",
+      "把概念、画面、花字整批推翻重做",
+      "为纯口播的屏也机械建屏"
+    ]
+  },
+  {
+    "id": "research-heavy-knowledge-video",
+    "prompt": "这里有一篇论文、两份分析报告和案例资料。我想把完整模型讲成一期知识视频，嘴里只讲关键判断，画面把模型展开。",
+    "film_shape": "spoken+pictures",
+    "screens_with_picture": "multiple-beats",
+    "must_do": [
+      "建立可回查的资料索引和内容记忆",
+      "两次限量查询 Method Wiki",
+      "生成可录口播和有画面的屏各自的 visual-plan.json",
+      "契约使用 v5：问题、必见内容、必须表达、固定文字、证据，外加 sample",
+      "每屏样张只摆磁盘上真实存在的素材，不做动效、不做设计",
+      "每屏在一段一屏的审阅页里左口播、右样张、下双反馈",
+      "通过念稿与样张审阅后才宣布可录",
+      "交接前跑 check-handoff-artifacts.mjs：story-lock.md、method-history.json、ideas.json、_idea/web/ 都在，且 deliverable/assets/ 恰好等于契约引用的那几张；缺项问作者是跳过还是漏了，跳过就记进 _idea/current.md"
+    ],
+    "must_not_do": [
+      "把字幕重排当内容契约",
+      "把多段口播的画面单元合并成一屏",
+      "让一屏跨多个 Speech Beat 或一个 Beat 挂多屏",
+      "在内容契约阶段画模型、声明一屏多状态或指定时间",
+      "在样张里调字体配色、加动效或做成设计稿",
+      "用示意图或标注过的概念样张假装缺失的素材",
+      "在录音前生成精确时间码",
+      "开始剪辑或动画",
+      "把 visual-plan.json 交到 hyperframes / frontend-design 而不是做画面那一步"
+    ]
+  },
+  {
+    "id": "existing-script-read-aloud",
+    "prompt": "稿子已经写好了，我只想在窗口里自己念一遍，边念边记录哪里需要改。",
+    "film_shape": "spoken-only",
+    "screens_with_picture": [],
+    "must_do": [
+      "快速确认事实与立场边界",
+      "保留 Speech Beat 或按自然段生成审阅 Beat",
+      "打开左文案右反馈的念稿页并保存版本绑定反馈"
+    ],
+    "must_not_do": [
+      "重跑完整资料流程",
+      "强迫用户重新选择 Storyline"
+    ]
+  },
+  {
+    "id": "ruling-text-free-screen-accepted",
+    "prompt": "这一屏就是一整张现场照片，画面上一个字都不打。",
+    "film_shape": "spoken+pictures",
+    "screens_with_picture": ["beat-05"],
+    "must_do": [
+      "允许 screens[].must_show 是空数组，不要为了过校验硬塞文字条目",
+      "用 sample.assets[] 声明这一屏摆的那张真实素材（可以只有一张图）",
+      "让审阅页仍然显示出这一屏的素材"
+    ],
+    "must_not_do": [
+      "因为 must_show 为空而拒绝建屏或直接 exit 2",
+      "为了让这一屏显得有内容而补入画面上并不存在的文字",
+      "把没有上屏文字误当成「这一屏还没定」"
+    ]
+  },
+  {
+    "id": "ruling-one-beat-one-screen",
+    "prompt": "这一段口播里先讲旧流程，再讲新流程，我可以在同一屏上先出 A 再出 B 吗？",
+    "film_shape": "spoken+pictures",
+    "screens_with_picture": ["beat-02", "beat-03"],
+    "must_do": [
+      "先拆成两个 Speech Beat，再各自配一屏",
+      "每屏恰好绑定一个 beat_id，同一 beat_id 不得出现两次",
+      "把「先看 A 再理解 B」写成两次认知任务，而不是一屏的两个状态"
+    ],
+    "must_not_do": [
+      "在一屏上声明多个状态（states）或写动画分镜",
+      "把着重动画写成契约状态——它在录后按实测音频加",
+      "一个 Beat 挂多屏或一屏跨多个 Speech Beat"
+    ]
+  },
+  {
+    "id": "ruling-sample-real-material-only",
+    "prompt": "这一屏我需要解释一个关系，手上没有合适的截图，能不能先画个示意图摆上去？",
+    "film_shape": "spoken+pictures",
+    "screens_with_picture": ["beat-04"],
+    "must_do": [
+      "只用磁盘上真实存在的素材拼样张",
+      "素材不够就如实写成缺口，并在契约里标明",
+      "把「用什么样的模型展示」写在 sample.note 里，仍然算定了这一屏的简单设计"
+    ],
+    "must_not_do": [
+      "用标注为概念示意的图当样张摆上去",
+      "因为样张可重做就丢掉作者明确指定的画面形式",
+      "把样张当成设计交付、去调字体配色或加动效"
+    ]
+  }
+]

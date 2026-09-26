@@ -1,0 +1,22 @@
+{
+  "contract_version": "5.0",
+  "title": "纯文字屏：没有素材，只有花字",
+  "script_hash": "",
+  "screens": [
+    {
+      "screen_id": "screen-beat-02",
+      "beat_id": "beat-02",
+      "title": "一句重点",
+      "question": "这一屏只打一句话吗？",
+      "must_show": [
+        "文字：先有判断，再有工具"
+      ],
+      "sample": {
+        "layout": "text",
+        "captions": [
+          "先有判断，再有工具"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Video Idea System"
+  short_description: "短视频创意与内容交界的唯一入口：定核心、发散、写可录口播、逐屏内容契约与样张，一个念稿审阅面确认后交接制作"
+  default_prompt: "Use $video-idea-system to clarify my creative core, ground it in my sources, battle the claim into a story-lock, write a record-ready spoken script, produce one content contract per screen that carries a picture (visual-plan.json, with 花字 declared there), and settle the picture design on the single read-aloud review page that both film shapes go through."

@@ -1,0 +1,26 @@
+Video Idea System
+Copyright (C) 2026 阿祖不看 TVC
+
+Author: 阿祖不看 TVC
+Xiaohongshu: 阿祖不看 TVC
+Email: Lawyif@163.com
+Website: https://demyth.info
+
+Canonical project name: Video Idea System
+Skill identifier: video-idea-system
+
+This project is an open-source, review-gated short-video ideation and content
+Skill. It covers creative divergence, source grounding and content working
+memory, a conversational Story Battle, a record-ready spoken script, a per-screen
+content contract with a rough real-material sample, and a single read-aloud
+review face that the author reads through and confirms before any production
+work starts.
+
+The read-aloud review face is served by the shared review seam
+(`planners-review-core`) and is meant to run locally only. This Skill does not
+cut, render, or encode video.
+
+Attribution and source identification may appear in repository documents,
+process HTML pages, review server pages, validation pages, and developer
+workflow surfaces. The Skill should not add project branding to final client
+deliverables by default unless the user explicitly requests it.

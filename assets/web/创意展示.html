@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>@@TITLE@@</title><style>
+:root{
+  --paper:#F4F1E9; --card:#FBF9F4; --ink:#16150F; --ink2:#3D3A31; --dim:#8A8577;
+  --rule:#DCD6C7; --rule2:#EDE8DC; --red:#C4291F; --red2:#8E1F18; --gold:#8A6B1E;
+  --serif:"Songti SC","Source Han Serif SC","Noto Serif SC",STSong,serif;
+  --sans:"PingFang SC","Hiragino Sans GB","Noto Sans SC",system-ui,sans-serif;
+  --mono:"SF Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.72;
+  -webkit-font-smoothing:antialiased;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E")}
+.wrap{max-width:1300px;margin:0 auto;padding:0 34px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* 顶栏 */
+.bar{position:sticky;top:0;z-index:40;background:rgba(244,241,233,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.bar .in{max-width:1300px;margin:0 auto;padding:10px 34px;display:flex;justify-content:space-between;gap:16px;align-items:center}
+.bar .l{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--dim)}
+.bar nav{display:flex;gap:18px}
+.bar a{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--dim);text-decoration:none;border-bottom:1px solid transparent}
+.bar a:hover{color:var(--ink);border-color:var(--red)}
+
+/* 抬头 */
+header{padding:78px 0 0;border-bottom:1px solid var(--rule)}
+.hgrid{display:grid;grid-template-columns:1.35fr 1fr;gap:56px;align-items:end;padding-bottom:56px}
+@media(max-width:980px){.hgrid{grid-template-columns:1fr;gap:34px}}
+h1{font-family:var(--serif);font-weight:700;font-size:clamp(27px,3.7vw,46px);line-height:1.34;letter-spacing:-.005em;margin:0;text-wrap:pretty}
+h1 b{font-weight:700;color:var(--red)}
+.hmeta{margin:26px 0 0;display:flex;flex-wrap:wrap;gap:0}
+.hmeta span{font-family:var(--mono);font-size:11.5px;color:var(--dim);padding:0 16px;border-right:1px solid var(--rule)}
+.hmeta span:first-child{padding-left:0}
+.hmeta span:last-child{border-right:0}
+.hmeta em{font-style:normal;color:var(--ink);font-weight:600}
+.spec{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.spec figure{margin:0;position:relative;overflow:hidden;background:#111}
+.spec img{width:100%;display:block;transition:transform .8s cubic-bezier(.2,.7,.3,1)}
+.spec figure:hover img{transform:scale(1.035)}
+.spec figcaption{position:absolute;left:0;bottom:0;right:0;padding:7px 9px;font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;
+  color:#EDE8DC;background:linear-gradient(to top,rgba(0,0,0,.82),transparent)}
+.spec figcaption b{color:#fff;font-weight:600}
+
+/* 段 */
+.sec{padding:76px 0 0}
+.slabel{display:flex;align-items:baseline;gap:16px;padding-bottom:14px;border-bottom:1px solid var(--ink)}
+.slabel i{font-family:var(--mono);font-style:normal;font-size:11px;letter-spacing:.2em;color:var(--red)}
+.slabel h2{font-family:var(--sans);font-size:12px;font-weight:600;letter-spacing:.24em;color:var(--ink);margin:0}
+.slabel .r{margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--dim);letter-spacing:.1em}
+
+/* 墙：一屏，裁掉 */
+.wall{height:calc(100vh - 210px);min-height:430px;column-count:6;column-gap:24px;overflow:hidden;
+  padding:20px 0 0;position:relative;
+  -webkit-mask-image:linear-gradient(to bottom,#000 76%,transparent);mask-image:linear-gradient(to bottom,#000 76%,transparent)}
+.wall div{break-inside:avoid;font-size:10.5px;line-height:1.5;color:#A8A294;margin-bottom:6px}
+.wall i{font-family:var(--mono);font-style:normal;font-size:9.5px;color:#C3BCA9;margin-right:6px}
+@media(max-width:1120px){.wall{column-count:4}}
+@media(max-width:760px){.wall{column-count:2;font-size:10px}}
+
+/* 卡 */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--ink)}
+@media(max-width:1080px){.cards{grid-template-columns:1fr}}
+.card{background:var(--card);border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:26px 26px 24px;
+  animation:in .4s cubic-bezier(.2,.7,.3,1) both;position:relative}
+.card:last-child{border-right:0}
+@media(max-width:1080px){.card{border-right:0}}
+.card:nth-child(2){animation-delay:.07s}.card:nth-child(3){animation-delay:.14s}
+@keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:0}
+.card.is-struct{border-top:2px solid var(--red)}
+.card.is-part{border-top:2px dashed var(--gold)}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px}
+.chip{font-family:var(--mono);font-size:9.5px;letter-spacing:.05em;padding:2px 6px;border:1px solid var(--rule);color:var(--dim)}
+.chip.s{border-color:var(--red);color:var(--red)}
+.chip.p{border-color:var(--gold);color:var(--gold)}
+.cname{font-family:var(--serif);font-weight:700;font-size:clamp(21px,2vw,27px);line-height:1.24;margin:0 0 12px;letter-spacing:-.01em}
+.cone{font-size:13.5px;color:var(--ink2);margin:0 0 20px}
+.rule{height:1px;background:var(--rule2);margin:0 0 16px}
+.core{font-size:13.5px;color:var(--ink2);margin:0 0 20px}
+.core b{color:var(--ink);font-weight:650}
+.lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;color:var(--dim);margin:0 0 9px}
+.fl{display:grid;grid-template-columns:38px 1fr;gap:9px;margin-bottom:8px}
+.fl .k{font-family:var(--mono);font-size:10px;color:var(--red);letter-spacing:.04em;padding-top:3px}
+.fl .v{font-size:13px;color:var(--ink2)}
+.mat{font-family:var(--mono);font-size:10.5px;color:var(--gold);line-height:1.85;word-break:break-word;margin:0}
+.hard{margin:0;padding:0;list-style:none}
+.hard li{font-size:12.5px;color:var(--ink2);padding-left:14px;position:relative;margin-bottom:7px}
+.hard li::before{content:"!";position:absolute;left:0;top:0;font-family:var(--mono);font-size:10px;color:var(--red)}
+.hard li:last-child{margin-bottom:0}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:22px}
+.pg{font-family:var(--mono);font-size:11.5px;color:var(--dim);letter-spacing:.1em}
+.pg b{color:var(--ink)}
+button{font-family:var(--sans);font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--ink);background:transparent;
+  border:1px solid var(--ink);padding:11px 20px;cursor:pointer;transition:.16s}
+button:hover:not(:disabled){background:var(--ink);color:var(--paper)}
+button:disabled{opacity:.22;cursor:not-allowed}
+button.pri{background:var(--ink);color:var(--paper)}
+button.pri:hover{background:var(--red);border-color:var(--red)}
+.foot-note{margin:20px 0 0;font-family:var(--mono);font-size:10.5px;color:var(--dim);letter-spacing:.04em;text-align:right}
+
+/* 表 */
+table{border-collapse:collapse;width:100%;table-layout:fixed}
+th,td{padding:16px 18px 16px 0;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule2)}
+th{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;color:var(--dim);font-weight:500;border-bottom:1px solid var(--ink);padding-bottom:10px}
+td{font-size:13px;color:var(--ink2)}
+td b{color:var(--ink);font-weight:650}
+tbody tr:hover td{background:#EFEBE0}
+th:nth-child(1),td:nth-child(1){width:12%;font-family:var(--serif);font-weight:700;color:var(--ink);font-size:14.5px;line-height:1.4}
+th:nth-child(2),td:nth-child(2){width:8%;font-family:var(--mono);font-size:11px;color:var(--dim)}
+th:nth-child(3),td:nth-child(3){width:35%;color:var(--ink)}
+th:nth-child(4),td:nth-child(4){width:26%;color:var(--dim)}
+th:nth-child(5),td:nth-child(5){width:19%;font-family:var(--mono);font-size:10.5px;color:var(--gold);line-height:1.95}
+.mini{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:var(--red);font-weight:400}
+.pace{display:flex;flex-wrap:wrap;margin-top:24px;border-top:1px solid var(--ink);padding-top:14px}
+.pace div{font-size:11.5px;color:var(--dim);padding-right:20px;margin-right:20px;border-right:1px solid var(--rule)}
+.pace div:last-child{border-right:0}
+.pace b{display:block;font-family:var(--mono);font-size:14px;color:var(--ink);margin-bottom:2px}
+footer{padding:66px 0 84px;margin-top:76px;border-top:1px solid var(--rule);font-family:var(--mono);font-size:10.5px;color:var(--dim);line-height:2;letter-spacing:.03em}
+footer code{font-family:var(--mono);color:var(--ink2)}
+.go{display:inline-block;margin-top:18px;font-family:var(--mono);font-size:11.5px;color:var(--red);text-decoration:none;border-bottom:1px solid var(--red);padding-bottom:2px}
+</style><style>.pre{white-space:pre-wrap;overflow-wrap:anywhere}.brief{padding:18px 0}.table-scroll{overflow:auto}table{min-width:850px}.wall{height:auto;min-height:0;max-height:440px}.card[hidden]{display:none}</style></head><body><div class="bar"><div class="in"><span class="l">@@LABEL@@</span><nav>@@NAV@@</nav></div></div>
+<header><div class="wrap"><div class="hgrid"><div><h1>@@TITLE@@</h1><p class="hmeta pre">@@META@@</p></div><div class="brief pre">@@BRIEF@@</div></div></div></header>
+@@CONTENT@@
+<footer><div class="wrap pre">@@FOOTER@@</div></footer>
+<script>
+const cards=Array.from(document.querySelectorAll('.card'));
+let page=0; const per=3, total=Math.ceil(cards.length/per);
+function render(){cards.forEach((c,i)=>c.hidden=i<page*per||i>=(page+1)*per);
+document.getElementById('pg').textContent=`第 ${page+1}/${total} 批 · 共 ${cards.length} 个`;
+document.getElementById('prev').disabled=page===0;
+document.getElementById('next').disabled=page===total-1;}
+document.getElementById('prev').onclick=()=>{if(page>0){page--;render();}};
+document.getElementById('next').onclick=()=>{if(page<total-1){page++;render();}};
+document.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))return;
+if(e.key==='ArrowRight')document.getElementById('next').click();
+if(e.key==='ArrowLeft')document.getElementById('prev').click();});render();
+</script></body></html>

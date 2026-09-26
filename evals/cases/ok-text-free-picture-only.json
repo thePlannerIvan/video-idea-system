@@ -1,0 +1,18 @@
+{
+  "contract_version": "5.0",
+  "title": "文字-free 屏：一整张现场照片，画面上一个字都不打",
+  "script_hash": "",
+  "screens": [
+    {
+      "screen_id": "screen-beat-05",
+      "beat_id": "beat-05",
+      "title": "现场那张照片",
+      "question": "这一屏只需要看见现场吗？",
+      "must_show": [],
+      "sample": {
+        "layout": "single",
+        "assets": [{ "kind": "image", "path": "deliverable/assets/site.png", "label": "现场照片" }]
+      }
+    }
+  ]
+}

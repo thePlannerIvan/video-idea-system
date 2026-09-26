@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>念稿 · 样张审阅</title>
+<style>
+:root{--paper:#eeebe4;--sheet:#fffefb;--ink:#17161a;--muted:#7b756c;--faint:#a49c8f;--line:#ddd6c8;--line-strong:#b9b0a0;--accent:#c2372a;--accent-soft:#f0ded9;--blue:#3a628c;--reading-size:25px;--header-h:64px;--nav-h:46px;--chrome-h:110px;--stage-cols:minmax(320px,.8fr) minmax(430px,1.2fr)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;color:var(--ink);font-family:"Avenir Next","PingFang SC",system-ui,sans-serif;background:var(--paper);-webkit-font-smoothing:antialiased}
+header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;height:var(--header-h);padding:0 28px;border-bottom:1px solid var(--line-strong);background:rgba(238,235,228,.93);backdrop-filter:blur(16px)}
+.brand{font:700 17px/1 "Songti SC","Baskerville",serif;letter-spacing:.01em}
+.brand b{color:var(--accent);font:800 9px ui-monospace,monospace;letter-spacing:.16em;margin-right:8px}
+.meta,.saved{font-size:12px;color:var(--muted)}
+.spacer{flex:1}
+.signature{display:flex;flex-direction:column;align-items:flex-end;color:var(--ink);text-decoration:none;line-height:1.15;margin-right:4px}
+.signature strong{font:700 13px "Songti SC",serif}
+.signature span{color:var(--faint);font:800 9px ui-monospace,monospace;letter-spacing:.1em}
+button,select{border:1px solid var(--line-strong);background:var(--sheet);color:var(--ink);padding:8px 12px;border-radius:5px;font:inherit;font-size:13px}
+button{cursor:pointer;transition:background .15s,border-color .15s}
+button:hover{border-color:var(--ink)}
+button.primary{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
+button.primary:hover{background:var(--accent);border-color:var(--accent)}
+.saved.ok{color:#2c7051}.saved.error{color:var(--accent)}
+.progress{width:96px;height:3px;background:var(--line);overflow:hidden;border-radius:2px}
+.progress span{display:block;height:100%;background:var(--accent);transition:width .2s}
+main{max-width:1720px;margin:0 auto;padding:30px 28px 0}
+.intro{padding-bottom:22px;border-bottom:1px solid var(--line)}
+h1{margin:0 0 9px;font:700 27px/1.2 "Songti SC","Baskerville",serif;letter-spacing:.01em}
+.hint{max-width:1080px;color:var(--muted);font-size:13.5px;line-height:1.75}
+.beatnav{position:sticky;top:var(--header-h);z-index:25;display:flex;gap:6px;height:var(--nav-h);align-items:center;overflow-x:auto;padding:0 28px;margin:0 -28px 20px;background:rgba(238,235,228,.95);border-bottom:1px solid var(--line);backdrop-filter:blur(16px);scrollbar-width:none}
+.beatnav::-webkit-scrollbar{display:none}
+.beatnav a{position:relative;flex:0 0 auto;font:700 11px ui-monospace,monospace;letter-spacing:.05em;text-decoration:none;color:var(--faint);border:1px solid transparent;padding:5px 9px;border-radius:5px;white-space:nowrap;transition:color .15s,border-color .15s}
+.beatnav a:hover{color:var(--ink)}
+.beatnav a.current{color:var(--ink);border-color:var(--line-strong);background:var(--sheet)}
+.beatnav a.done::after{content:"";position:absolute;top:3px;right:3px;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.screen{display:flex;flex-direction:column;gap:14px;height:calc(100dvh - var(--chrome-h) - 20px);min-height:580px;padding:20px 0;border-bottom:1px solid var(--line);scroll-margin-top:calc(var(--chrome-h) + 6px)}
+.screen.contract-open{height:auto;min-height:0}
+.screen-head{display:flex;align-items:baseline;gap:12px;flex:0 0 auto}
+.beat-no{color:var(--accent);font:800 10px ui-monospace,monospace;letter-spacing:.16em}
+.screen-head h2{margin:0;font:700 21px/1.2 "Songti SC",serif;letter-spacing:.01em}
+.duration{color:var(--faint);font-size:12px;font-variant-numeric:tabular-nums}
+.screen-head .status{margin-left:auto;font-size:12px;padding:6px 10px}
+.stage,.feedback{display:grid;grid-template-columns:var(--stage-cols);gap:30px}
+.stage{flex:1 1 auto;min-height:0}
+.screen.no-screen .stage,.screen.no-screen .feedback{grid-template-columns:minmax(0,820px)}
+.col-left{display:flex;flex-direction:column;min-width:0;min-height:0}
+.stage-right{display:flex;flex-direction:column;min-width:0;min-height:0}
+.col-head{display:flex;align-items:center;gap:8px;height:20px;margin-bottom:12px;flex:0 0 auto;font:800 9.5px ui-monospace,monospace;letter-spacing:.15em;color:var(--faint)}
+.col-head.lit{color:var(--accent)}
+.col-head i{font-style:normal;color:var(--accent);border:1px solid var(--line-strong);border-radius:3px;padding:2px 6px}
+.spoken-wrap{flex:1 1 auto;min-height:0;display:flex;align-items:center}
+.spoken{max-height:100%;overflow:hidden;white-space:pre-wrap;font:400 var(--reading-size)/1.9 "Songti SC","Noto Serif CJK SC",serif;letter-spacing:.02em;margin:0}
+.frame-wrap{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center}
+.frame{position:relative;display:grid;gap:6px;padding:6px;background:#15130f;border:1px solid rgba(12,11,8,.5);border-radius:6px;overflow:hidden;box-shadow:0 1px 3px rgba(40,32,20,.14)}
+.frame.hero{grid-template-columns:1.42fr 1fr;grid-template-rows:1fr}
+.frame.hero>.cell{grid-column:1}
+.frame .thumbs{display:grid;grid-template-columns:repeat(var(--tc,2),1fr);gap:6px;min-height:0}
+.frame.grid{grid-template-columns:repeat(var(--cols,2),1fr)}
+.frame.single{grid-template-columns:1fr}
+.cell{position:relative;display:flex;flex-direction:column;justify-content:center;min-width:0;min-height:0;margin:0;overflow:hidden;background:#1e1b16;border-radius:3px}
+.cell>figcaption{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:5px;padding:4px 7px;font:400 9.5px/1.35 "PingFang SC",system-ui,sans-serif;color:#cfc7b6;background:linear-gradient(transparent,rgba(8,7,5,.88) 46%);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cell>figcaption b{flex:0 0 auto;font:700 8.5px ui-monospace,monospace;letter-spacing:.1em;color:#cfc7b6;border:1px dashed rgba(207,199,182,.6);border-radius:2px;padding:1px 4px}
+.cell>figcaption span{overflow:hidden;text-overflow:ellipsis}
+.shot{position:relative;width:100%;max-height:100%;margin:auto;background-repeat:no-repeat;background-position:center;background-size:100% 100%}
+.shot.dimmed::after{content:"";position:absolute;inset:0;background:radial-gradient(58% 42% at 16% 70%,rgba(8,7,5,.06) 0,rgba(8,7,5,.55) 46%,rgba(8,7,5,.9) 100%)}
+.mark{position:absolute;border:2px solid var(--accent);box-shadow:0 0 0 9999px rgba(10,9,7,.46);display:flex;align-items:flex-start;justify-content:flex-end}
+.mark b{font:800 10px ui-monospace,monospace;background:var(--accent);color:#fff;padding:1px 4px;transform:translate(50%,-50%)}
+.csv{display:flex;flex-direction:column;gap:3px;padding:8px 9px;align-self:stretch;justify-content:center;overflow:hidden}
+.csv-row{display:grid;grid-template-columns:minmax(0,26%) minmax(0,1fr) auto;gap:6px;align-items:baseline;font:400 10.5px/1.35 ui-monospace,monospace;color:#ded6c8;border-bottom:1px solid rgba(255,255,255,.07);padding-bottom:3px}
+.csv-row b{font-weight:600;color:#f6efe3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.csv-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.csv-row i{font-style:normal;color:#e0a33c}
+.htmlcell{position:relative;width:100%;min-width:0;align-self:center;overflow:hidden;background:#fff}
+.htmlcell iframe{position:absolute;left:0;top:0;border:0;transform-origin:0 0;pointer-events:none}
+.strip{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;align-self:stretch;align-content:center;padding:6px}
+.strip span{display:block;aspect-ratio:16/9;background-repeat:no-repeat;background-position:center;background-size:contain;background-color:#26221d}
+.frame video{width:100%;height:100%;align-self:stretch;object-fit:contain;background:#000}
+.frame.text{place-content:center;padding:7%}
+.frame.text p{margin:0;color:#f4eee2;font:700 clamp(15px,1.9vw,28px)/1.65 "Songti SC",serif;text-align:center}
+.frame.text p+p{margin-top:.45em}
+.captions{position:absolute;left:0;right:0;bottom:0;display:flex;flex-wrap:wrap;gap:4px;padding:20px 8px 8px;background:linear-gradient(transparent,rgba(8,7,5,.9) 42%);max-height:48%;overflow:auto}
+.captions span{font:700 10.5px/1.3 "Avenir Next","PingFang SC",sans-serif;color:#f7f2e8;background:rgba(20,18,15,.7);border:1px solid rgba(255,255,255,.22);border-radius:2px;padding:2px 6px}
+.captions span.key{background:var(--accent);border-color:var(--accent);font-weight:800}
+.sample-note{margin:12px 0 0;flex:0 0 auto;color:var(--muted);font-size:12.5px;line-height:1.6}
+.invalidated{display:none;margin:18px 0 0;padding:12px 16px;border:1px solid var(--accent);border-left-width:4px;border-radius:6px;background:var(--accent-soft);color:#6d2318;font-size:13.5px;line-height:1.65}
+.invalidated[data-show="1"]{display:block}
+.prior{margin:14px 22px 0;padding:12px 16px;border:1px solid var(--line);border-left-width:4px;border-radius:6px;background:#f6f2ea;font-size:13.5px;line-height:1.65}
+.prior b{color:#5f594f}
+.prior p{margin:6px 0 0}
+.prior .prior-hint{color:var(--muted);font-size:12.5px}
+.invalidated b{font-family:ui-monospace,monospace;letter-spacing:.08em}
+.contract{flex:0 0 auto}
+.contract summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:7px;color:var(--faint);font:700 10px ui-monospace,monospace;letter-spacing:.14em}
+.contract summary::-webkit-details-marker{display:none}
+.contract summary::before{content:"＋";font-size:12px}
+.contract[open] summary::before{content:"－"}
+.contract summary:hover{color:var(--ink)}
+.contract-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px 26px;margin:12px 0 2px;padding:16px 20px;background:var(--sheet);border:1px solid var(--line);border-radius:6px}
+.contract-grid h4{margin:0 0 5px;color:var(--faint);font:800 9px ui-monospace,monospace;letter-spacing:.12em}
+.contract-grid ul{margin:0;padding-left:16px;font-size:13px;line-height:1.6}
+.contract-grid p{margin:0;font-size:13.5px;line-height:1.6}
+.feedback{flex:0 0 auto}
+.fb{display:flex;flex-direction:column;min-width:0}
+.fb label{display:block;margin-bottom:7px;font:800 9.5px ui-monospace,monospace;letter-spacing:.15em;color:var(--faint)}
+.fb.spoken-fb label{color:var(--accent)}
+.fb.visual-fb label{color:var(--blue)}
+textarea{width:100%;height:88px;min-height:88px;max-height:214px;resize:none;border:1px solid var(--line-strong);border-radius:6px;background:var(--sheet);color:var(--ink);padding:12px 14px;font:14.5px/1.62 "Avenir Next","PingFang SC",sans-serif;outline:none;transition:border-color .15s,box-shadow .15s}
+textarea:focus{border-color:var(--ink);box-shadow:0 0 0 3px rgba(23,22,26,.06)}
+textarea::placeholder{color:var(--faint)}
+.overall{margin:38px 0 70px;padding:26px 28px;background:var(--sheet);border:1px solid var(--line);border-radius:6px}
+.overall h2{margin:0 0 15px;font:700 20px "Songti SC",serif}
+.overall-grid{display:grid;grid-template-columns:220px 1fr;gap:22px;align-items:start}
+.overall textarea{height:106px}
+.overall label{display:block;margin-bottom:7px;font:800 9.5px ui-monospace,monospace;letter-spacing:.15em;color:var(--faint)}
+@media(max-width:1024px){
+  .stage,.feedback,.screen.no-screen .stage,.screen.no-screen .feedback{grid-template-columns:1fr}
+  .stage{gap:22px}
+  .screen{height:auto;min-height:0}
+  .frame-wrap{min-height:300px}
+  .spoken-wrap{min-height:120px;align-items:flex-start}
+  header .meta,header .progress,.signature{display:none}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">念稿 · 样张审阅</div>
+  <div class="meta" id="headerMeta"></div>
+  <div class="progress"><span id="progressBar"></span></div>
+  <div class="spacer"></div>
+  <a class="signature" href="https://demyth.info" target="_blank" rel="noreferrer"><strong>阿祖不看 TVC</strong><span>demyth.info</span></a>
+  <button id="reload" title="重新加载页面（页面本身被更新过也用它）">⟳ 刷新</button>
+  <button id="smaller">A−</button><button id="larger">A＋</button>
+  <span class="saved" id="saveState">尚未保存</span>
+  <button class="primary" id="saveAll">保存本轮反馈</button>
+</header>
+<main>
+  <section class="intro"><h1 id="title"></h1><div class="hint" id="introHint"></div></section>
+  <div class="invalidated" id="invalidated"></div>
+  <nav class="beatnav" id="beatnav"></nav>
+  <div id="beats"></div>
+  <section class="overall">
+    <h2>整条视频</h2>
+    <div class="overall-grid">
+      <div><label for="overallDecision">整体决定</label><select id="overallDecision" style="width:100%"><option value="approve">整体可录</option><option value="revise">需要修改</option></select></div>
+      <div><label for="overallFeedback">整体节奏、结构、口播或画面意见</label><textarea id="overallFeedback" placeholder="例如：前半太慢；第三段应该提前；某一屏摆错了素材……"></textarea></div>
+    </div>
+  </section>
+</main>
+{{REVIEW_BRIDGE}}
+<script>
+const BOOT=__REVIEW_BOOTSTRAP__;
+const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+const draftKey=`video-story-review:${BOOT.sourceHash}`;
+const state=(BOOT.feedback&&BOOT.feedback.sourceHash===BOOT.sourceHash)?structuredClone(BOOT.feedback):{sourceHash:BOOT.sourceHash,overallDecision:'approve',overallFeedback:'',beats:{}};
+/* 本地存储：**不透明源 iframe 里读 localStorage 会直接抛 SecurityError**
+   （审阅桥的 docstring 专门交代过；有插件时这一页就在那种帧里）。
+   原来这一行是顶层语句 —— 整页脚本当场死掉：静态骨架在、逐段那一半永远不画、零报错。
+   一律走这几个取用器：拿不到本地存储是**降级**，不是故障。 */
+function draftStore(){try{return window.localStorage}catch(error){return null}}
+function storeGet(key){const store=draftStore();try{return store?store.getItem(key):null}catch(error){return null}}
+function storeSet(key,value){const store=draftStore();try{if(store)store.setItem(key,value)}catch(error){/* 满或不可写：草稿只是便利，不是承诺 */}}
+function storeRemove(key){const store=draftStore();try{if(store)store.removeItem(key)}catch(error){}}
+let timer=null,fontSize=Number(storeGet('video-story-reading-size')||25);
+
+const VOCABULARY=['approve','revise','cut'];
+const STATUS_LABEL={approve:'这一段可录',revise:'需要修改',cut:'删除这一段'};
+const priorFor=id=>(BOOT.priorRound&&BOOT.priorRound.flagged&&BOOT.priorRound.flagged[id])||null;
+const touched=new Set();   // 这一轮人真的动过的段（默认通过 vs 人点过，必须在数据里分得开）
+function beatState(id){
+  if(!state.beats[id]){
+    // 上一轮人明确标过（revise/cut）→ **没有默认值**：复核后重新选一次（点一下通过即可）。
+    // 这是 R7：重出审阅页不许把人的决定重置成默认通过。
+    state.beats[id]=priorFor(id)
+      ?{status:'',spokenNotes:'',visualNotes:'',needsReview:true}
+      :{status:'approve',spokenNotes:'',visualNotes:''};
+  }
+  const b=state.beats[id];
+  if(b.notes&&!b.spokenNotes){b.spokenNotes=b.notes;delete b.notes}
+  if(typeof b.spokenNotes!=='string')b.spokenNotes='';
+  if(typeof b.visualNotes!=='string')b.visualNotes='';
+  // 词表外的取值（真实旧文件里有，例如 approved-after-typo-correction）：不猜、不改写，
+  // 当"待复核"处理，原值原样留给人看。
+  if(b.status&&!VOCABULARY.includes(b.status)){b.offVocabulary=b.status;b.status='';b.needsReview=true}
+  return b;
+}
+function list(items){return Array.isArray(items)&&items.length?`<ul>${items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}
+function pct(x,w){return w>=100?0:Math.round(x/(100-w)*1000)/10}
+
+function markerHtml(m){
+  const c=(m.index-1)%m.cols,r=Math.floor((m.index-1)/m.cols);
+  return `<span class="mark" style="left:${c/m.cols*100}%;top:${r/m.rows*100}%;width:${100/m.cols}%;height:${100/m.rows}%">${m.tag?`<b>${esc(m.tag)}</b>`:''}</span>`;
+}
+function assetCell(a){
+  const span=a.span?` style="grid-column:span ${a.span}"`:'';
+  let inner='';
+  if(a.kind==='image'){
+    const ratio=a.w&&a.h?(a.w*(a.zoom?a.zoom.w/100:1))/(a.h*(a.zoom?a.zoom.h/100:1)):16/9;
+    const bg=a.zoom
+      ?`background-image:url('${a.url}');background-size:${10000/a.zoom.w}% ${10000/a.zoom.h}%;background-position:${pct(a.zoom.x,a.zoom.w)}% ${pct(a.zoom.y,a.zoom.h)}%;`
+      :`background-image:url('${a.url}');background-size:100% 100%;`;
+    inner=`<div class="shot${a.dim?' dimmed':''}" style="aspect-ratio:${ratio};${bg}">${a.mark?markerHtml(a.mark):''}</div>`;
+  }else if(a.kind==='csv'){
+    inner=`<div class="csv">${(a.rows||[]).map(row=>`<div class="csv-row">${row.map((cell,i)=>i===0?`<b>${esc(cell)}</b>`:(i===row.length-1?`<i>${esc(cell)}</i>`:`<span>${esc(cell)}</span>`)).join('')}</div>`).join('')}</div>`;
+  }else if(a.kind==='html'){
+    const vw=a.vw||1000,vh=a.vh||625;
+    inner=`<div class="htmlcell" data-vw="${vw}" data-vh="${vh}"><iframe src="${a.url}" width="${vw}" height="${vh}" loading="lazy" tabindex="-1" scrolling="no"></iframe></div>`;
+  }else if(a.kind==='glob'){
+    inner=`<div class="strip">${(a.items||[]).map(it=>`<span style="background-image:url('${it.url}')"></span>`).join('')}</div>`;
+  }else if(a.kind==='video'){
+    inner=`<video src="${a.url}" controls preload="metadata" playsinline></video>`;
+  }
+  return `<figure class="cell"${span}>${inner}<figcaption><b>图注</b><span>${esc(a.label)}</span></figcaption></figure>`;
+}
+function captionsHtml(caps){
+  if(!Array.isArray(caps)||!caps.length)return '';
+  return `<div class="captions">${caps.map((c,i)=>`<span class="${i===caps.length-1?'key':''}">${esc(c)}</span>`).join('')}</div>`;
+}
+function renderSample(sample){
+  if(!sample)return '';
+  if(sample.layout==='text'){
+    return `<div class="frame text"><div>${(sample.captions||[]).map(c=>`<p>${esc(c)}</p>`).join('')}</div></div>`;
+  }
+  if(!Array.isArray(sample.assets)||!sample.assets.length)return '';
+  const caps=captionsHtml(sample.captions);
+  if(sample.layout==='hero'&&sample.assets.length>1){
+    const [hero,...thumbs]=sample.assets;
+    return `<div class="frame hero">${assetCell(hero)}<div class="thumbs" style="--tc:${sample.thumbCols||2}">${thumbs.map(assetCell).join('')}</div>${caps}</div>`;
+  }
+  if(sample.layout==='grid'||sample.assets.length>1){
+    const cols=sample.cols||(sample.assets.length<=2?sample.assets.length:Math.min(3,sample.assets.length));
+    return `<div class="frame grid" style="--cols:${cols}">${sample.assets.map(assetCell).join('')}${caps}</div>`;
+  }
+  return `<div class="frame single">${sample.assets.map(assetCell).join('')}${caps}</div>`;
+}
+function renderContract(screen){
+  if(!screen)return '';
+  const row=(label,items)=>Array.isArray(items)&&items.length?`<div><h4>${label}</h4>${list(items)}</div>`:'';
+  return `<details class="contract"><summary>这一屏画面要出现什么</summary><div class="contract-grid">
+    <div><h4>问题</h4><p>${esc(screen.question)}</p></div>
+    ${row('画面上要有',screen.must_show)}${row('必须看出',screen.must_express)}${row('原样出现的字',screen.exact_labels)}${row('来源',screen.evidence)}
+  </div></details>`;
+}
+function render(){
+  document.getElementById('title').textContent=BOOT.title;
+  const withScreen=BOOT.beats.filter(b=>b.screen&&b.screen.sample).length;
+  document.getElementById('introHint').textContent=(BOOT.hasVisual
+    ?'这是整部片唯一的确认面，两种形状都过。一段一屏：左边是这一段要念出口的文案，右边是这一屏大概的样子，花字层压在样张下沿。这一页就要把画面定调到故意简单的程度——放哪张图、两张图是不是对比关系、用什么样的模型展示、模型上有什么字；粗糙可以，没定不行。口播改法或重录稿写左边的框，画面的意见写右边的框。'
+    :'这是整部片唯一的确认面，两种形状都过。这一段没有画面，所以只有口播；仍要在这里把「这一段怎么呈现」定下来——出镜、素材、有没有画面支持，粗糙可以，没定不行。口播改法或重录稿写在下面的框里。')
+    +' 素材框下沿带「图注」标记的小字只是为了让你认出这一格是什么，它不上屏；真正会上屏的字只有花字层和契约里以「文字：」声明的那几条。';
+  const invalidated=BOOT.invalidated;
+  if(invalidated){
+    const el=document.getElementById('invalidated');
+    el.dataset.show='1';
+    const orphaned=(BOOT.priorRound&&BOOT.priorRound.orphaned)||[];
+    el.innerHTML=`<b>上一轮反馈已作废</b>：${esc(invalidated.reason)}。${invalidated.previousSavedAt?`上一轮保存于 ${esc(invalidated.previousSavedAt)}。`:''}旧反馈已备份到 <code>${esc(invalidated.backupPath||'feedback.previous.json')}</code>，本轮请重新念一遍并确认。`
+      +(orphaned.length?`<br><b>另有 ${orphaned.length} 条上一轮的意见对不上本版任何一段</b>（标题改了或段落被删：${esc(orphaned.join('、'))}）—— 它们留在备份里，没有被带进这一轮。`:'');
+  }
+  const seconds=BOOT.beats.reduce((s,b)=>s+b.estimatedSeconds,0);
+  document.getElementById('headerMeta').textContent=`${BOOT.beats.length} 段 · 约 ${Math.max(1,Math.round(seconds/60))} 分钟${withScreen?` · ${withScreen} 屏样张`:''}`;
+  document.getElementById('beatnav').innerHTML=BOOT.beats.map(b=>`<a href="#${esc(b.id)}" data-nav="${esc(b.id)}">${String(b.index).padStart(2,'0')} ${esc(b.title)}</a>`).join('');
+  document.getElementById('overallDecision').value=state.overallDecision||'approve';
+  document.getElementById('overallFeedback').value=state.overallFeedback||'';
+  document.getElementById('beats').innerHTML=BOOT.beats.map(beat=>{
+    const saved=beatState(beat.id),hasScreen=!!(beat.screen&&beat.screen.sample);
+    return `<section class="screen${hasScreen?'':' no-screen'}" id="${esc(beat.id)}">
+  <div class="screen-head">
+    <span class="beat-no">第 ${String(beat.index).padStart(2,'0')} 段</span>
+    <h2>${esc(beat.title)}</h2>
+    <span class="duration">约 ${beat.estimatedSeconds}s</span>
+    <select class="status" data-field="status" data-id="${esc(beat.id)}">
+      ${saved.needsReview?`<option value="" ${saved.status?'':'selected'}>— 待复核 —</option>`:''}
+      <option value="approve" ${saved.status==='approve'?'selected':''}>这一段可录</option>
+      <option value="revise" ${saved.status==='revise'?'selected':''}>需要修改</option>
+      <option value="cut" ${saved.status==='cut'?'selected':''}>删除这一段</option>
+    </select>
+  </div>
+  <div class="stage">
+    <article class="col-left">
+      <div class="col-head lit">文案 · 照着念</div>
+      <div class="spoken-wrap"><p class="spoken">${esc(beat.body)}</p></div>
+    </article>
+    ${hasScreen?`<div class="stage-right">
+      <div class="col-head">画面 · 大概长这样</div>
+      <div class="frame-wrap">${renderSample(beat.screen.sample)}</div>
+      ${beat.screen.sample.note?`<p class="sample-note">${esc(beat.screen.sample.note)}</p>`:''}
+    </div>`:''}
+  </div>
+  ${renderContract(beat.screen)}
+  ${(()=>{const prior=priorFor(beat.id);if(!prior)return '';const shown=prior.known?(STATUS_LABEL[prior.status]||prior.status):prior.status+'（不在当前词表 approve/revise/cut 里）';return `<div class="prior"><b>上一轮你标的是「${esc(shown)}」</b>${prior.spokenNotes?`<p>口播：${esc(prior.spokenNotes)}</p>`:''}${prior.visualNotes?`<p>画面：${esc(prior.visualNotes)}</p>`:''}<p class="prior-hint">只作参考，不算本轮意见；复核后在这一段上面选一个状态即可（选「这一段可录」就是通过）。</p></div>`})()}
+  <div class="feedback">
+    <div class="fb spoken-fb"><label>口播 / 重录</label><textarea data-field="spokenNotes" data-id="${esc(beat.id)}" placeholder="重录后的稿子直接贴进来；或者写口播上的问题。">${esc(saved.spokenNotes)}</textarea></div>
+    ${hasScreen?`<div class="fb visual-fb"><label>视觉反馈</label><textarea data-field="visualNotes" data-id="${esc(beat.id)}" placeholder="这一屏的素材对不对、有没有漏掉、花字要不要改。">${esc(saved.visualNotes)}</textarea></div>`:''}
+  </div>
+</section>`;
+  }).join('');
+  markNav();
+  requestAnimationFrame(()=>{fitScreens();autoGrowAll();spy()});
+}
+function fitScreens(){
+  document.querySelectorAll('.screen').forEach(screen=>{
+    const wrap=screen.querySelector('.spoken-wrap'),spoken=screen.querySelector('.spoken');
+    if(wrap&&spoken){
+      let size=fontSize,n=0;
+      spoken.style.fontSize=size+'px';
+      while(spoken.scrollHeight>wrap.clientHeight&&size>13&&n++<70){
+        size-=1;spoken.style.fontSize=size+'px';
+      }
+    }
+    const fwrap=screen.querySelector('.frame-wrap'),frame=screen.querySelector('.frame');
+    if(fwrap&&frame&&fwrap.clientHeight>60){
+      const w=Math.min(fwrap.clientWidth,fwrap.clientHeight*16/9);
+      frame.style.width=`${Math.round(w)}px`;
+      frame.style.height=`${Math.round(w*9/16)}px`;
+    }
+    screen.querySelectorAll('.htmlcell').forEach(box=>{
+      const f=box.querySelector('iframe');if(!f)return;
+      const vw=Number(box.dataset.vw)||1000,vh=Number(box.dataset.vh)||625;
+      const scale=box.clientWidth/vw;
+      f.style.transform=`scale(${scale})`;
+      box.style.height=`${Math.round(vh*scale)}px`;
+    });
+  });
+}
+function autoGrow(el){el.style.height='auto';el.style.height=`${Math.min(el.scrollHeight+2,214)}px`}
+function autoGrowAll(){document.querySelectorAll('textarea[data-field]').forEach(autoGrow)}
+function markNav(){
+  document.querySelectorAll('.beatnav a').forEach(a=>{
+    const st=beatState(a.dataset.nav);
+    a.classList.toggle('done',st.status!=='approve'||!!st.spokenNotes.trim()||!!st.visualNotes.trim());
+  });
+}
+function spy(){
+  const y=window.scrollY+128;let cur=null;
+  document.querySelectorAll('.screen').forEach(s=>{if(s.offsetTop<=y)cur=s.id});
+  document.querySelectorAll('.beatnav a').forEach(a=>a.classList.toggle('current',a.dataset.nav===cur));
+}
+function collect(){
+  state.overallDecision=document.getElementById('overallDecision').value;
+  state.overallFeedback=document.getElementById('overallFeedback').value;
+  document.querySelectorAll('[data-id][data-field]').forEach(el=>beatState(el.dataset.id)[el.dataset.field]=el.value);
+  state.sourceHash=BOOT.sourceHash;
+  return state;
+}
+function updateProgress(){
+  const settled=BOOT.beats.filter(b=>!!beatState(b.id).status).length;
+  document.getElementById('progressBar').style.width=`${BOOT.beats.length?settled/BOOT.beats.length*100:0}%`;
+  const pending=BOOT.beats.length-settled;
+  const meta=document.getElementById('headerMeta');
+  if(meta&&pending)meta.textContent=meta.textContent.replace(/ · \d+ 段待复核$/,'')+` · ${pending} 段待复核`;
+}
+function label(message,kind=''){const el=document.getElementById('saveState');el.textContent=message;el.className=`saved ${kind}`}
+function saveDraft(){collect();storeSet(draftKey,JSON.stringify(state));label('草稿已自动保存');updateProgress();markNav()}
+// 唤醒分档（R5）：宿主"接受了" ≠ "通知到了"。无插件宿主回 woke:false，必须说出来。
+function wakeTier(woke){
+  if(!woke||woke.error)return {told:false,text:'；没能通知模型（'+((woke&&woke.error)||'宿主没回话')+'）—— 请回对话说一声「已完成」'};
+  if(woke.verified)return {told:true,text:'，宿主已核对：通知进了队列'};
+  if(woke.woke===false)return {told:false,text:'；这个宿主不能唤醒模型（没有插件），请回对话说一声「已完成」'};
+  return {told:false,text:'；宿主接受了这次唤醒，但没有核对是否送到 —— 模型没反应就回对话说一声'};
+}
+async function saveFile(){
+  clearTimeout(timer);              // 提交时先掐掉待触发的草稿保存，别让它盖掉保存结果那句话
+  collect();
+  const undecided=BOOT.beats.filter(b=>!beatState(b.id).status).map(b=>b.id);
+  if(undecided.length){
+    label(`还有 ${undecided.length} 段必须明确选择（${undecided.join('、')}）—— 上一轮你标过它们，复核后选一个状态即可`,'error');
+    return;
+  }
+  const button=document.getElementById('saveAll');button.disabled=true;label('正在保存…');
+  try{
+    if(!review)throw Error('页面没连上审阅宿主：这个页面必须由宿主打开（DSH 侧栏，或本 Skill 的审阅入口起的本地宿主）');
+    const flagged=Object.keys((BOOT.priorRound&&BOOT.priorRound.flagged)||{});
+    // R5b：页面知道、但机器看不见的前提，全部进数据（收件层把它们摘进收据，不改原生形状）。
+    const reviewState={
+      priorRoundInvalidated:!!BOOT.invalidated,
+      priorRoundSavedAt:(BOOT.invalidated&&BOOT.invalidated.previousSavedAt)||(BOOT.priorRound&&BOOT.priorRound.savedAt)||null,
+      flaggedBeats:flagged,
+      redecidedBeats:flagged.filter(id=>touched.has(id)),
+      defaultedBeats:BOOT.beats.filter(b=>!touched.has(b.id)).map(b=>b.id),
+      // 上一轮有些意见挂的段在本版里已经不存在（id 变了/段落删了）——机器也要看得见
+      orphanedPriorBeats:(BOOT.priorRound&&BOOT.priorRound.orphaned)||[],
+      preCheck:false,
+      preCheckNote:'页面未做版本核对（稿子与契约在审阅目录之外）；提交里的 sourceHash 由收件层与生成器记录比对。',
+    };
+    await review.write({...state,reviewState});
+    let woke=null;try{woke=await review.wake({unit:'整套'})}catch(error){woke={error:error.message}}
+    storeRemove(draftKey);
+    clearTimeout(timer);
+    const tier=wakeTier(woke);
+    label('已交给审阅宿主（'+(review.transport||'未知通道')+'）'+tier.text,'ok');markNav();
+  }catch(error){label(`保存失败：${error.message}`,'error')}finally{button.disabled=false}
+}
+document.addEventListener('input',e=>{
+  if(e.target.dataset&&e.target.dataset.id)touched.add(e.target.dataset.id);
+  if(e.target.matches('textarea[data-field]'))autoGrow(e.target);
+  if(e.target.matches('textarea[data-id]')&&e.target.value.trim()){
+    const select=document.querySelector(`select[data-id="${e.target.dataset.id}"]`);
+    if(select&&select.value==='approve')select.value='revise';
+    document.getElementById('overallDecision').value='revise';
+  }
+  if(e.target.id==='overallFeedback'&&e.target.value.trim())document.getElementById('overallDecision').value='revise';
+  clearTimeout(timer);timer=setTimeout(saveDraft,350);
+});
+document.addEventListener('change',e=>{
+  if(e.target.dataset&&e.target.dataset.id)touched.add(e.target.dataset.id);
+  saveDraft();
+});
+document.addEventListener('toggle',e=>{
+  if(e.target.matches('details.contract')){
+    e.target.closest('.screen').classList.toggle('contract-open',e.target.open);
+    requestAnimationFrame(fitScreens);
+  }
+},true);
+document.getElementById('saveAll').addEventListener('click',saveFile);
+document.getElementById('larger').addEventListener('click',()=>{fontSize=Math.min(34,fontSize+2);storeSet('video-story-reading-size',fontSize);requestAnimationFrame(fitScreens)});
+document.getElementById('smaller').addEventListener('click',()=>{fontSize=Math.max(16,fontSize-2);storeSet('video-story-reading-size',fontSize);requestAnimationFrame(fitScreens)});
+document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='s'){e.preventDefault();saveFile()}});
+async function hydrateAssets(root){
+  if(!review)return;
+  const swap=async(el,get,set)=>{
+    const rel=get(el);
+    if(!rel||/^(https?:|data:|blob:)/.test(rel))return;
+    try{const url=await review.asset(rel);if(url)set(el,url)}catch(error){/* 取不到就保持原样，不静默变空白 */}
+  };
+  for(const img of root.querySelectorAll('img[src]'))await swap(img,e=>e.getAttribute('src'),(e,u)=>{e.src=u});
+  for(const video of root.querySelectorAll('video[src]'))await swap(video,e=>e.getAttribute('src'),(e,u)=>{e.src=u});
+  for(const frame of root.querySelectorAll('iframe[src]'))await swap(frame,e=>e.getAttribute('src'),(e,u)=>{e.src=u});
+  for(const el of root.querySelectorAll('[style*="background-image"]')){
+    const style=el.getAttribute('style')||'';
+    const match=style.match(/url\((['"]?)([^'")]+)\1\)/);
+    if(!match)continue;
+    const rel=match[2];
+    if(/^(https?:|data:|blob:)/.test(rel))continue;
+    try{const url=await review.asset(rel);el.setAttribute('style',style.split(match[0]).join(`url('${url}')`))}catch(error){}
+  }
+}
+let review=null;
+const BRIDGE_TIMEOUT_MS=1500;   // 握手要有上限：不返回就按"没有桥"降级继续画
+function connectWithTimeout(ms){
+  return new Promise(resolve=>{
+    let done=false;
+    const finish=value=>{if(!done){done=true;resolve(value)}};
+    setTimeout(()=>finish(null),ms);
+    try{ ReviewBridge.connect().then(finish,()=>finish(null)); }catch(error){finish(null)}
+  });
+}
+function sayReadOnly(why){
+  label(why,'error');
+  const banner=document.getElementById('invalidated');
+  if(banner&&banner.dataset.show!=='1'){
+    banner.dataset.show='1';
+    banner.innerHTML='<b>本页只读</b>：'+esc(why)+' 右上角 ⟳ 随时可以重新加载。';
+  }
+}
+let spyTick=null;
+window.addEventListener('scroll',()=>{if(spyTick)return;spyTick=requestAnimationFrame(()=>{spyTick=null;spy()})},{passive:true});
+window.addEventListener('resize',()=>{clearTimeout(window.__fit);window.__fit=setTimeout(fitScreens,120)});
+const draft=storeGet(draftKey);
+if(draft&&!BOOT.feedback)try{Object.assign(state,JSON.parse(draft))}catch{}
+document.getElementById('reload').addEventListener('click',()=>location.reload());
+// 桥是**增强**，不是氧气：先用自己的数据把自己画出来（逐段、导航、进度），再去握手。
+(async function boot(){
+  render();
+  updateProgress();
+  try{ if(window.ReviewBridge)review=await connectWithTimeout(BRIDGE_TIMEOUT_MS); }
+  catch(error){ review=null; }
+  if(review){
+    hydrateAssets(document);                       // 资产只有宿主能给（不透明帧里取不到相对地址）
+  }else{
+    sayReadOnly(window.ReviewBridge
+      ? '连不上审阅宿主（握手超时）：内容可以看，反馈存不进去。'
+      : '这一页没有连上审阅宿主：内容可以看，反馈存不进去（请让宿主打开它）。');
+  }
+})();
+</script>
+</body>
+</html>

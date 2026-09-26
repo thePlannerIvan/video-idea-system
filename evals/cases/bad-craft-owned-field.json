@@ -1,0 +1,8 @@
+{
+  "contract_version": "5.0",
+  "title": "契约里出现了 craft 分组步骤的字段名",
+  "script_hash": "",
+  "screens": [
+    { "screen_id": "screen-beat-01", "beat_id": "beat-01", "title": "a", "question": "q", "must_show": ["x"], "visualModel": "流程图" }
+  ]
+}

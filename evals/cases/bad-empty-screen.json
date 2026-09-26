@@ -1,0 +1,8 @@
+{
+  "contract_version": "5.0",
+  "title": "审阅页显示不出任何东西的屏",
+  "script_hash": "",
+  "screens": [
+    { "screen_id": "screen-beat-01", "beat_id": "beat-01", "title": "还没想好", "question": "这一屏是什么？", "must_show": [] }
+  ]
+}

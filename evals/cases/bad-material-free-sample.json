@@ -1,0 +1,25 @@
+{
+  "contract_version": "5.0",
+  "title": "非 text 布局却不声明任何真实素材（概念示意的形状）",
+  "script_hash": "",
+  "screens": [
+    {
+      "screen_id": "screen-beat-04",
+      "beat_id": "beat-04",
+      "title": "关系示意",
+      "question": "两者是什么关系？",
+      "must_show": [
+        "旧流程与新流程两个概念"
+      ],
+      "sample": {
+        "layout": "grid",
+        "note": "概念示意，待 Craft 设计",
+        "captions": [
+          "旧流程",
+          "新流程"
+        ],
+        "assets": []
+      }
+    }
+  ]
+}

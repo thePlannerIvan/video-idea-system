@@ -1,0 +1,8 @@
+{
+  "contract_version": "5.0",
+  "title": "契约里声明了一屏多状态",
+  "script_hash": "",
+  "screens": [
+    { "screen_id": "screen-beat-01", "beat_id": "beat-01", "title": "a", "question": "q", "must_show": ["x"], "states": [{ "id": "s1" }, { "id": "s2" }] }
+  ]
+}

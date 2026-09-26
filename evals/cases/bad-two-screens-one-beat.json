@@ -1,0 +1,9 @@
+{
+  "contract_version": "5.0",
+  "title": "一屏多状态的反面：一个 Beat 挂了两屏",
+  "script_hash": "",
+  "screens": [
+    { "screen_id": "screen-beat-02-a", "beat_id": "beat-02", "title": "旧流程", "question": "旧流程是什么样？", "must_show": ["旧流程"] },
+    { "screen_id": "screen-beat-02-b", "beat_id": "beat-02", "title": "新流程", "question": "新流程是什么样？", "must_show": ["新流程"] }
+  ]
+}

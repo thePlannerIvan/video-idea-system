@@ -1,0 +1,70 @@
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# macOS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+.npm/
+.pnpm-store/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+ENV/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build / dist
+dist/
+build/
+_internal/
+output/
+outputs/
+
+# Video material — never publish source footage, audio or renders
+*.mp4
+*.mov
+*.mkv
+*.webm
+*.avi
+*.m4v
+*.wav
+*.mp3
+*.m4a
+*.aac
+*.flac
+*.aif
+*.aiff
+*.braw
+*.r3d
+*.srt
+*.vtt
+
+# Session artifacts (safety net when the Skill is invoked inside the repo)
+.video-story/
+_idea/
+deliverable/
+review-submissions.json
+feedback/
+*.log

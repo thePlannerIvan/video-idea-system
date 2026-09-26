@@ -1,0 +1,22 @@
+{
+  "contract_version": "5.0",
+  "title": "sample 不写 captions 键也合法",
+  "script_hash": "",
+  "screens": [
+    {
+      "screen_id": "screen-beat-01",
+      "beat_id": "beat-01",
+      "title": "两格对照",
+      "question": "两张图是什么关系？",
+      "must_show": ["旧流程与新流程两个整页截图"],
+      "sample": {
+        "layout": "grid",
+        "cols": 2,
+        "assets": [
+          { "kind": "image", "path": "deliverable/assets/old.png", "label": "旧流程" },
+          { "kind": "image", "path": "deliverable/assets/new.png", "label": "新流程" }
+        ]
+      }
+    }
+  ]
+}
