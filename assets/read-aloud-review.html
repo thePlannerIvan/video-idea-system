@@ -13,8 +13,10 @@
  * 念稿正文的字号是"可调阅读档"（A+/A-、--reading-size），保留；字族换成 token 的那一串。
  * ========================================================================== */
 /*__DSH_TOKENS__*/
-:root{
-  /* 画面预览用的中性深色（明暗两套主题下都保持深，因为那是视频画面） */
+body{
+  /* 画面预览用的中性深色（明暗两套主题下都保持深，因为那是视频画面）。
+     **必须定义在 body 上，不能写 :root** —— 令牌表本身是打在 body 上的，
+     `:root` 看不到 body 的值，那样这几个变量会整个是空的（画面框渲染成透明，且不报错）。 */
   --frame-bg:var(--dsw-static-neutral-bluish-950);
   --cell-bg:var(--dsw-static-neutral-bluish-875);
   --cell-ink:var(--dsw-static-neutral-bluish-100);
@@ -23,7 +25,7 @@
   --chrome-h:110px;--stage-cols:minmax(320px,.8fr) minmax(430px,1.2fr)}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary);
+body{margin:0;background:var(--dsw-alias-bg-document-preview);color:var(--dsw-alias-label-primary);
   font:var(--dsw-font-xs-13);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 ::selection{background:var(--dsw-alias-bg-document-selection)}
 header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;height:var(--header-h);padding:0 24px;
@@ -47,20 +49,27 @@ button.primary:hover{background:var(--dsw-alias-button-primary-hover);border-col
 .saved.error{color:var(--dsw-alias-state-error-primary)}
 .progress{width:96px;height:3px;background:var(--dsw-alias-bg-skeleton);overflow:hidden;border-radius:var(--dsw-radius-xs)}
 .progress span{display:block;height:100%;background:var(--dsw-alias-brand-primary);transition:width var(--ds-transition-duration) var(--ds-ease-in-out)}
-main{max-width:1720px;margin:0 auto;padding:28px 24px 0}
-.intro{padding-bottom:20px;border-bottom:1px solid var(--dsw-alias-border-l1)}
+main{max-width:1720px;margin:0 auto;padding:24px 24px 0}
+.intro{padding:18px 22px 20px;margin-bottom:18px;background:var(--dsw-alias-bg-layer-1);
+  border:1px solid var(--dsw-alias-border-l1);border-radius:var(--dsw-radius-md)}
 h1{margin:0 0 9px;font:var(--dsw-font-l-20)}
 .hint{max-width:1080px;color:var(--dsw-alias-label-secondary);font:var(--dsw-font-s-14);line-height:1.75}
 .beatnav{position:sticky;top:var(--header-h);z-index:25;display:flex;gap:6px;height:var(--nav-h);align-items:center;overflow-x:auto;
   padding:0 24px;margin:0 -24px 20px;background:var(--dsw-menu-surface-fill);backdrop-filter:var(--dsw-menu-backdrop-filter);
   border-bottom:1px solid var(--dsw-alias-border-l1)}
-.beatnav a{position:relative;flex:0 0 auto;font:var(--dsw-font-xxxs-strong-11);color:var(--dsw-alias-label-secondary);
+.beatnav a{position:relative;flex:0 0 auto;font:var(--dsw-font-xxs-strong-12);color:var(--dsw-alias-label-secondary);
   text-decoration:none;padding:6px 9px;border-radius:var(--dsw-radius-xs);text-transform:uppercase;letter-spacing:.08em;
   transition:background var(--ds-transition-duration-fast) var(--ds-ease-in-out)}
 .beatnav a:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
 .beatnav a[aria-current="true"],.beatnav a.on{background:var(--dsw-alias-button-ghost-active-fill);color:var(--dsw-alias-label-primary)}
-.screen{display:flex;flex-direction:column;gap:18px;min-height:calc(100vh - var(--chrome-h));padding:0 0 26px;border-bottom:1px solid var(--dsw-alias-border-l1);margin-bottom:26px}
+/* 段落卡。原来每段 min-height:calc(100vh - chrome) —— 有画面时是双栏、撑满一屏说得通；
+   没有画面时（.no-screen）只放两行字却仍占满一屏，就是一整屏空白。所以按有无画面分开。 */
+.screen{display:flex;flex-direction:column;gap:18px;padding:22px 24px 24px;margin-bottom:18px;
+  background:var(--dsw-alias-bg-layer-1);border:1px solid var(--dsw-alias-border-l1);
+  border-radius:var(--dsw-radius-md);min-height:calc(100vh - var(--chrome-h))}
+.screen.no-screen{min-height:auto}
 .screen-head{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+.screen-head{padding-bottom:12px;border-bottom:1px solid var(--dsw-alias-border-l1)}
 .screen-head h2{margin:0;font:var(--dsw-font-base-strong-16)}
 .screen-head .status{margin-left:auto;font:var(--dsw-font-xxs-12)}
 .stage,.feedback{display:grid;grid-template-columns:var(--stage-cols);gap:30px}
@@ -69,14 +78,14 @@ h1{margin:0 0 9px;font:var(--dsw-font-l-20)}
 .col-left{display:flex;flex-direction:column;min-width:0;min-height:0}
 .stage-right{display:flex;flex-direction:column;min-width:0;min-height:0}
 .col-head{display:flex;align-items:center;gap:8px;height:20px;margin-bottom:12px;flex:0 0 auto;
-  font:var(--dsw-font-xxxs-strong-11);letter-spacing:.15em;color:var(--dsw-alias-label-tertiary)}
+  font:var(--dsw-font-xxs-strong-12);letter-spacing:.1em;color:var(--dsw-alias-label-secondary)}
 .col-head.lit{color:var(--dsw-alias-label-primary)}
 .col-head i{font-style:normal;color:var(--dsw-alias-label-secondary);border:1px solid var(--dsw-alias-border-l2);
   border-radius:var(--dsw-radius-xs);padding:1px 6px}
 .spoken-wrap{flex:1 1 auto;min-height:0;display:flex;align-items:center}
 /* 念稿正文：字号是"可调阅读档"（--reading-size，A+/A- 改它），行距保留 1.9 的宽松档；
    字族换成 DSH 那一串。 */
-.spoken{max-height:100%;overflow:hidden;white-space:pre-wrap;margin:0;
+.spoken{max-height:100%;overflow:hidden;white-space:pre-wrap;margin:0;max-width:38em;
   font:400 var(--reading-size)/1.9 var(--dsw-font-family);letter-spacing:.01em}
 .frame-wrap{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center}
 .frame{position:relative;display:grid;gap:6px;padding:6px;background:var(--frame-bg);
