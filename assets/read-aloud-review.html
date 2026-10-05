@@ -4,116 +4,170 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>念稿 · 样张审阅</title>
-<style>
-:root{--paper:#eeebe4;--sheet:#fffefb;--ink:#17161a;--muted:#7b756c;--faint:#a49c8f;--line:#ddd6c8;--line-strong:#b9b0a0;--accent:#c2372a;--accent-soft:#f0ded9;--blue:#3a628c;--reading-size:25px;--header-h:64px;--nav-h:46px;--chrome-h:110px;--stage-cols:minmax(320px,.8fr) minmax(430px,1.2fr)}
+<style>/* ==========================================================================
+ * 观感：DSH 的设计令牌（公共接缝 planners-review-core 的那一份，生成时内联）。
+ * 两层分清楚：
+ *   · 外壳（页头/念稿导航/按钮/输入/卡片/契约表）= 界面 → 全部走 token；
+ *   · 画面预览（.frame/.cell/.captions）= 视频画面本身 → 保持"播放器是深色"这件事，
+ *     但底色换成 DSH 的**中性深色**（原来是暖褐），不再自配色。
+ * 念稿正文的字号是"可调阅读档"（A+/A-、--reading-size），保留；字族换成 token 的那一串。
+ * ========================================================================== */
+/*__DSH_TOKENS__*/
+:root{
+  /* 画面预览用的中性深色（明暗两套主题下都保持深，因为那是视频画面） */
+  --frame-bg:var(--dsw-static-neutral-bluish-950);
+  --cell-bg:var(--dsw-static-neutral-bluish-875);
+  --cell-ink:var(--dsw-static-neutral-bluish-100);
+  --cell-dim:var(--dsw-static-neutral-bluish-400);
+  --reading-size:25px;--header-h:64px;--nav-h:46px;
+  --chrome-h:110px;--stage-cols:minmax(320px,.8fr) minmax(430px,1.2fr)}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;color:var(--ink);font-family:"Avenir Next","PingFang SC",system-ui,sans-serif;background:var(--paper);-webkit-font-smoothing:antialiased}
-header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;height:var(--header-h);padding:0 28px;border-bottom:1px solid var(--line-strong);background:rgba(238,235,228,.93);backdrop-filter:blur(16px)}
-.brand{font:700 17px/1 "Songti SC","Baskerville",serif;letter-spacing:.01em}
-.brand b{color:var(--accent);font:800 9px ui-monospace,monospace;letter-spacing:.16em;margin-right:8px}
-.meta,.saved{font-size:12px;color:var(--muted)}
+body{margin:0;background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary);
+  font:var(--dsw-font-xs-13);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+::selection{background:var(--dsw-alias-bg-document-selection)}
+header{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;height:var(--header-h);padding:0 24px;
+  border-bottom:1px solid var(--dsw-alias-border-l2);background:var(--dsw-menu-surface-fill);backdrop-filter:var(--dsw-menu-backdrop-filter)}
+.brand{font:var(--dsw-font-base-strong-16);display:flex;align-items:center}
+.brand b{color:var(--dsw-alias-brand-primary);font:var(--dsw-font-xxxs-strong-11);letter-spacing:.16em;margin-right:8px}
+.meta,.saved{font:var(--dsw-font-xxs-12);color:var(--dsw-alias-label-secondary)}
 .spacer{flex:1}
-.signature{display:flex;flex-direction:column;align-items:flex-end;color:var(--ink);text-decoration:none;line-height:1.15;margin-right:4px}
-.signature strong{font:700 13px "Songti SC",serif}
-.signature span{color:var(--faint);font:800 9px ui-monospace,monospace;letter-spacing:.1em}
-button,select{border:1px solid var(--line-strong);background:var(--sheet);color:var(--ink);padding:8px 12px;border-radius:5px;font:inherit;font-size:13px}
-button{cursor:pointer;transition:background .15s,border-color .15s}
-button:hover{border-color:var(--ink)}
-button.primary{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600}
-button.primary:hover{background:var(--accent);border-color:var(--accent)}
-.saved.ok{color:#2c7051}.saved.error{color:var(--accent)}
-.progress{width:96px;height:3px;background:var(--line);overflow:hidden;border-radius:2px}
-.progress span{display:block;height:100%;background:var(--accent);transition:width .2s}
-main{max-width:1720px;margin:0 auto;padding:30px 28px 0}
-.intro{padding-bottom:22px;border-bottom:1px solid var(--line)}
-h1{margin:0 0 9px;font:700 27px/1.2 "Songti SC","Baskerville",serif;letter-spacing:.01em}
-.hint{max-width:1080px;color:var(--muted);font-size:13.5px;line-height:1.75}
-.beatnav{position:sticky;top:var(--header-h);z-index:25;display:flex;gap:6px;height:var(--nav-h);align-items:center;overflow-x:auto;padding:0 28px;margin:0 -28px 20px;background:rgba(238,235,228,.95);border-bottom:1px solid var(--line);backdrop-filter:blur(16px);scrollbar-width:none}
-.beatnav::-webkit-scrollbar{display:none}
-.beatnav a{position:relative;flex:0 0 auto;font:700 11px ui-monospace,monospace;letter-spacing:.05em;text-decoration:none;color:var(--faint);border:1px solid transparent;padding:5px 9px;border-radius:5px;white-space:nowrap;transition:color .15s,border-color .15s}
-.beatnav a:hover{color:var(--ink)}
-.beatnav a.current{color:var(--ink);border-color:var(--line-strong);background:var(--sheet)}
-.beatnav a.done::after{content:"";position:absolute;top:3px;right:3px;width:5px;height:5px;border-radius:50%;background:var(--accent)}
-.screen{display:flex;flex-direction:column;gap:14px;height:calc(100dvh - var(--chrome-h) - 20px);min-height:580px;padding:20px 0;border-bottom:1px solid var(--line);scroll-margin-top:calc(var(--chrome-h) + 6px)}
-.screen.contract-open{height:auto;min-height:0}
-.screen-head{display:flex;align-items:baseline;gap:12px;flex:0 0 auto}
-.beat-no{color:var(--accent);font:800 10px ui-monospace,monospace;letter-spacing:.16em}
-.screen-head h2{margin:0;font:700 21px/1.2 "Songti SC",serif;letter-spacing:.01em}
-.duration{color:var(--faint);font-size:12px;font-variant-numeric:tabular-nums}
-.screen-head .status{margin-left:auto;font-size:12px;padding:6px 10px}
+.signature{display:flex;flex-direction:column;align-items:flex-end;color:var(--dsw-alias-label-primary);text-decoration:none;line-height:1.15;margin-right:4px}
+.signature strong{font:var(--dsw-font-xs-strong-13)}
+.signature span{color:var(--dsw-alias-label-tertiary);font:var(--dsw-font-xxxs-strong-11);letter-spacing:.1em}
+button,select{height:28px;padding:0 12px;border:1px solid var(--dsw-alias-border-l2);border-radius:var(--dsw-radius-sm);
+  background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);font:var(--dsw-font-xs-13)}
+button{cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  transition:background var(--ds-transition-duration-fast) var(--ds-ease-in-out),border-color var(--ds-transition-duration-fast) var(--ds-ease-in-out)}
+button:hover{background:var(--dsw-alias-interactive-bg-hover)}
+button.primary{background:var(--dsw-alias-button-primary-fill);border-color:var(--dsw-alias-button-primary-fill);
+  color:var(--dsw-alias-label-primary-foreground);font:var(--dsw-font-xs-strong-13)}
+button.primary:hover{background:var(--dsw-alias-button-primary-hover);border-color:var(--dsw-alias-button-primary-hover)}
+.saved.ok{color:var(--dsw-alias-state-success-primary)}
+.saved.error{color:var(--dsw-alias-state-error-primary)}
+.progress{width:96px;height:3px;background:var(--dsw-alias-bg-skeleton);overflow:hidden;border-radius:var(--dsw-radius-xs)}
+.progress span{display:block;height:100%;background:var(--dsw-alias-brand-primary);transition:width var(--ds-transition-duration) var(--ds-ease-in-out)}
+main{max-width:1720px;margin:0 auto;padding:28px 24px 0}
+.intro{padding-bottom:20px;border-bottom:1px solid var(--dsw-alias-border-l1)}
+h1{margin:0 0 9px;font:var(--dsw-font-l-20)}
+.hint{max-width:1080px;color:var(--dsw-alias-label-secondary);font:var(--dsw-font-s-14);line-height:1.75}
+.beatnav{position:sticky;top:var(--header-h);z-index:25;display:flex;gap:6px;height:var(--nav-h);align-items:center;overflow-x:auto;
+  padding:0 24px;margin:0 -24px 20px;background:var(--dsw-menu-surface-fill);backdrop-filter:var(--dsw-menu-backdrop-filter);
+  border-bottom:1px solid var(--dsw-alias-border-l1)}
+.beatnav a{position:relative;flex:0 0 auto;font:var(--dsw-font-xxxs-strong-11);color:var(--dsw-alias-label-secondary);
+  text-decoration:none;padding:6px 9px;border-radius:var(--dsw-radius-xs);text-transform:uppercase;letter-spacing:.08em;
+  transition:background var(--ds-transition-duration-fast) var(--ds-ease-in-out)}
+.beatnav a:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}
+.beatnav a[aria-current="true"],.beatnav a.on{background:var(--dsw-alias-button-ghost-active-fill);color:var(--dsw-alias-label-primary)}
+.screen{display:flex;flex-direction:column;gap:18px;min-height:calc(100vh - var(--chrome-h));padding:0 0 26px;border-bottom:1px solid var(--dsw-alias-border-l1);margin-bottom:26px}
+.screen-head{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+.screen-head h2{margin:0;font:var(--dsw-font-base-strong-16)}
+.screen-head .status{margin-left:auto;font:var(--dsw-font-xxs-12)}
 .stage,.feedback{display:grid;grid-template-columns:var(--stage-cols);gap:30px}
 .stage{flex:1 1 auto;min-height:0}
 .screen.no-screen .stage,.screen.no-screen .feedback{grid-template-columns:minmax(0,820px)}
 .col-left{display:flex;flex-direction:column;min-width:0;min-height:0}
 .stage-right{display:flex;flex-direction:column;min-width:0;min-height:0}
-.col-head{display:flex;align-items:center;gap:8px;height:20px;margin-bottom:12px;flex:0 0 auto;font:800 9.5px ui-monospace,monospace;letter-spacing:.15em;color:var(--faint)}
-.col-head.lit{color:var(--accent)}
-.col-head i{font-style:normal;color:var(--accent);border:1px solid var(--line-strong);border-radius:3px;padding:2px 6px}
+.col-head{display:flex;align-items:center;gap:8px;height:20px;margin-bottom:12px;flex:0 0 auto;
+  font:var(--dsw-font-xxxs-strong-11);letter-spacing:.15em;color:var(--dsw-alias-label-tertiary)}
+.col-head.lit{color:var(--dsw-alias-label-primary)}
+.col-head i{font-style:normal;color:var(--dsw-alias-label-secondary);border:1px solid var(--dsw-alias-border-l2);
+  border-radius:var(--dsw-radius-xs);padding:1px 6px}
 .spoken-wrap{flex:1 1 auto;min-height:0;display:flex;align-items:center}
-.spoken{max-height:100%;overflow:hidden;white-space:pre-wrap;font:400 var(--reading-size)/1.9 "Songti SC","Noto Serif CJK SC",serif;letter-spacing:.02em;margin:0}
+/* 念稿正文：字号是"可调阅读档"（--reading-size，A+/A- 改它），行距保留 1.9 的宽松档；
+   字族换成 DSH 那一串。 */
+.spoken{max-height:100%;overflow:hidden;white-space:pre-wrap;margin:0;
+  font:400 var(--reading-size)/1.9 var(--dsw-font-family);letter-spacing:.01em}
 .frame-wrap{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center}
-.frame{position:relative;display:grid;gap:6px;padding:6px;background:#15130f;border:1px solid rgba(12,11,8,.5);border-radius:6px;overflow:hidden;box-shadow:0 1px 3px rgba(40,32,20,.14)}
+.frame{position:relative;display:grid;gap:6px;padding:6px;background:var(--frame-bg);
+  border:1px solid var(--dsw-alias-border-l2);border-radius:var(--dsw-radius-sm);overflow:hidden;
+  box-shadow:var(--dsw-elevation-soft)}
 .frame.hero{grid-template-columns:1.42fr 1fr;grid-template-rows:1fr}
 .frame.hero>.cell{grid-column:1}
 .frame .thumbs{display:grid;grid-template-columns:repeat(var(--tc,2),1fr);gap:6px;min-height:0}
 .frame.grid{grid-template-columns:repeat(var(--cols,2),1fr)}
 .frame.single{grid-template-columns:1fr}
-.cell{position:relative;display:flex;flex-direction:column;justify-content:center;min-width:0;min-height:0;margin:0;overflow:hidden;background:#1e1b16;border-radius:3px}
-.cell>figcaption{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:5px;padding:4px 7px;font:400 9.5px/1.35 "PingFang SC",system-ui,sans-serif;color:#cfc7b6;background:linear-gradient(transparent,rgba(8,7,5,.88) 46%);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cell>figcaption b{flex:0 0 auto;font:700 8.5px ui-monospace,monospace;letter-spacing:.1em;color:#cfc7b6;border:1px dashed rgba(207,199,182,.6);border-radius:2px;padding:1px 4px}
+.cell{position:relative;display:flex;flex-direction:column;justify-content:center;min-width:0;min-height:0;margin:0;
+  overflow:hidden;background:var(--cell-bg);border-radius:var(--dsw-radius-xs)}
+.cell>figcaption{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:5px;padding:4px 7px;
+  font:var(--dsw-font-xxxs-11);color:var(--cell-ink);
+  background:linear-gradient(transparent,color-mix(in srgb,var(--dsw-static-neutral-bluish-1000) 88%,transparent) 46%);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cell>figcaption b{flex:0 0 auto;font:var(--dsw-font-xxxs-strong-11);letter-spacing:.1em;color:var(--cell-ink);
+  border:1px dashed var(--dsw-alias-border-l4);border-radius:var(--dsw-radius-xs);padding:1px 4px}
 .cell>figcaption span{overflow:hidden;text-overflow:ellipsis}
 .shot{position:relative;width:100%;max-height:100%;margin:auto;background-repeat:no-repeat;background-position:center;background-size:100% 100%}
-.shot.dimmed::after{content:"";position:absolute;inset:0;background:radial-gradient(58% 42% at 16% 70%,rgba(8,7,5,.06) 0,rgba(8,7,5,.55) 46%,rgba(8,7,5,.9) 100%)}
-.mark{position:absolute;border:2px solid var(--accent);box-shadow:0 0 0 9999px rgba(10,9,7,.46);display:flex;align-items:flex-start;justify-content:flex-end}
-.mark b{font:800 10px ui-monospace,monospace;background:var(--accent);color:#fff;padding:1px 4px;transform:translate(50%,-50%)}
+.shot.dimmed::after{content:"";position:absolute;inset:0;
+  background:radial-gradient(58% 42% at 16% 70%,color-mix(in srgb,var(--dsw-static-neutral-bluish-1000) 6%,transparent) 0,color-mix(in srgb,var(--dsw-static-neutral-bluish-1000) 55%,transparent) 46%,color-mix(in srgb,var(--dsw-static-neutral-bluish-1000) 90%,transparent) 100%)}
+.mark{position:absolute;border:2px solid var(--dsw-alias-state-error-primary);
+  box-shadow:0 0 0 9999px color-mix(in srgb,var(--dsw-static-neutral-bluish-1000) 46%,transparent);
+  display:flex;align-items:flex-start;justify-content:flex-end}
+.mark b{font:var(--dsw-font-xxxs-strong-11);background:var(--dsw-alias-state-error-primary);
+  color:var(--dsw-alias-label-primary-foreground);padding:1px 4px;transform:translate(50%,-50%)}
 .csv{display:flex;flex-direction:column;gap:3px;padding:8px 9px;align-self:stretch;justify-content:center;overflow:hidden}
-.csv-row{display:grid;grid-template-columns:minmax(0,26%) minmax(0,1fr) auto;gap:6px;align-items:baseline;font:400 10.5px/1.35 ui-monospace,monospace;color:#ded6c8;border-bottom:1px solid rgba(255,255,255,.07);padding-bottom:3px}
-.csv-row b{font-weight:600;color:#f6efe3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.csv-row{display:grid;grid-template-columns:minmax(0,26%) minmax(0,1fr) auto;gap:6px;align-items:baseline;
+  font:var(--dsw-font-xxxs-11);color:var(--cell-dim);border-bottom:1px solid var(--dsw-alias-border-l1);padding-bottom:3px}
+.csv-row b{font:var(--dsw-font-xxxs-strong-11);color:var(--cell-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .csv-row span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.csv-row i{font-style:normal;color:#e0a33c}
-.htmlcell{position:relative;width:100%;min-width:0;align-self:center;overflow:hidden;background:#fff}
+.csv-row i{font-style:normal;color:var(--dsw-alias-state-warn-primary)}
+.htmlcell{position:relative;width:100%;min-width:0;align-self:center;overflow:hidden;background:var(--dsw-alias-bg-base)}
 .htmlcell iframe{position:absolute;left:0;top:0;border:0;transform-origin:0 0;pointer-events:none}
 .strip{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;align-self:stretch;align-content:center;padding:6px}
-.strip span{display:block;aspect-ratio:16/9;background-repeat:no-repeat;background-position:center;background-size:contain;background-color:#26221d}
-.frame video{width:100%;height:100%;align-self:stretch;object-fit:contain;background:#000}
+.strip span{display:block;aspect-ratio:16/9;background-repeat:no-repeat;background-position:center;background-size:contain;
+  background-color:var(--cell-bg)}
+.frame video{width:100%;height:100%;align-self:stretch;object-fit:contain;background:var(--dsw-static-neutral-bluish-1000)}
 .frame.text{place-content:center;padding:7%}
-.frame.text p{margin:0;color:#f4eee2;font:700 clamp(15px,1.9vw,28px)/1.65 "Songti SC",serif;text-align:center}
+.frame.text p{margin:0;color:var(--cell-ink);font:500 clamp(15px,1.9vw,28px)/1.65 var(--dsw-font-family);text-align:center}
 .frame.text p+p{margin-top:.45em}
-.captions{position:absolute;left:0;right:0;bottom:0;display:flex;flex-wrap:wrap;gap:4px;padding:20px 8px 8px;background:linear-gradient(transparent,rgba(8,7,5,.9) 42%);max-height:48%;overflow:auto}
-.captions span{font:700 10.5px/1.3 "Avenir Next","PingFang SC",sans-serif;color:#f7f2e8;background:rgba(20,18,15,.7);border:1px solid rgba(255,255,255,.22);border-radius:2px;padding:2px 6px}
-.captions span.key{background:var(--accent);border-color:var(--accent);font-weight:800}
-.sample-note{margin:12px 0 0;flex:0 0 auto;color:var(--muted);font-size:12.5px;line-height:1.6}
-.invalidated{display:none;margin:18px 0 0;padding:12px 16px;border:1px solid var(--accent);border-left-width:4px;border-radius:6px;background:var(--accent-soft);color:#6d2318;font-size:13.5px;line-height:1.65}
+.captions{position:absolute;left:0;right:0;bottom:0;display:flex;flex-wrap:wrap;gap:4px;padding:20px 8px 8px;
+  background:linear-gradient(transparent,color-mix(in srgb,var(--dsw-static-neutral-bluish-1000) 90%,transparent) 42%);
+  max-height:48%;overflow:auto}
+.captions span{font:var(--dsw-font-xxxs-strong-11);color:var(--cell-ink);
+  background:color-mix(in srgb,var(--dsw-static-neutral-bluish-950) 70%,transparent);
+  border:1px solid var(--dsw-alias-border-l4);border-radius:var(--dsw-radius-xs);padding:2px 6px}
+.captions span.key{background:var(--dsw-alias-state-error-primary);border-color:var(--dsw-alias-state-error-primary);
+  color:var(--dsw-alias-label-primary-foreground)}
+.sample-note{margin:12px 0 0;flex:0 0 auto;color:var(--dsw-alias-label-secondary);font:var(--dsw-font-xxs-12);line-height:1.6}
+.invalidated{display:none;margin:18px 0 0;padding:12px 16px;border:1px solid var(--dsw-alias-state-warn-primary);
+  border-left-width:3px;border-radius:var(--dsw-radius-sm);background:var(--dsw-alias-state-warn-tertiary);
+  color:var(--dsw-alias-state-warn-label);font:var(--dsw-font-xs-13);line-height:1.65}
 .invalidated[data-show="1"]{display:block}
-.prior{margin:14px 22px 0;padding:12px 16px;border:1px solid var(--line);border-left-width:4px;border-radius:6px;background:#f6f2ea;font-size:13.5px;line-height:1.65}
-.prior b{color:#5f594f}
+.prior{margin:14px 22px 0;padding:12px 16px;border:1px solid var(--dsw-alias-border-l1);border-left-width:3px;
+  border-radius:var(--dsw-radius-sm);background:var(--dsw-alias-bg-layer-2);font:var(--dsw-font-xs-13);line-height:1.65}
+.prior b{color:var(--dsw-alias-label-primary)}
 .prior p{margin:6px 0 0}
-.prior .prior-hint{color:var(--muted);font-size:12.5px}
-.invalidated b{font-family:ui-monospace,monospace;letter-spacing:.08em}
+.prior .prior-hint{color:var(--dsw-alias-label-secondary);font:var(--dsw-font-xxs-12)}
+.invalidated b{font-family:var(--ds-font-family-code);letter-spacing:.08em}
 .contract{flex:0 0 auto}
-.contract summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:7px;color:var(--faint);font:700 10px ui-monospace,monospace;letter-spacing:.14em}
+.contract summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:7px;
+  color:var(--dsw-alias-label-tertiary);font:var(--dsw-font-xxxs-strong-11);letter-spacing:.14em}
 .contract summary::-webkit-details-marker{display:none}
 .contract summary::before{content:"＋";font-size:12px}
 .contract[open] summary::before{content:"－"}
-.contract summary:hover{color:var(--ink)}
-.contract-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px 26px;margin:12px 0 2px;padding:16px 20px;background:var(--sheet);border:1px solid var(--line);border-radius:6px}
-.contract-grid h4{margin:0 0 5px;color:var(--faint);font:800 9px ui-monospace,monospace;letter-spacing:.12em}
-.contract-grid ul{margin:0;padding-left:16px;font-size:13px;line-height:1.6}
-.contract-grid p{margin:0;font-size:13.5px;line-height:1.6}
+.contract summary:hover{color:var(--dsw-alias-label-primary)}
+.contract-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px 26px;margin:12px 0 2px;
+  padding:16px 20px;background:var(--dsw-alias-bg-layer-1);border:1px solid var(--dsw-alias-border-l1);border-radius:var(--dsw-radius-md)}
+.contract-grid h4{margin:0 0 5px;color:var(--dsw-alias-label-tertiary);font:var(--dsw-font-xxxs-strong-11);letter-spacing:.12em}
+.contract-grid ul{margin:0;padding-left:16px;font:var(--dsw-font-xs-13);line-height:1.6}
+.contract-grid p{margin:0;font:var(--dsw-font-xs-13);line-height:1.6}
 .feedback{flex:0 0 auto}
 .fb{display:flex;flex-direction:column;min-width:0}
-.fb label{display:block;margin-bottom:7px;font:800 9.5px ui-monospace,monospace;letter-spacing:.15em;color:var(--faint)}
-.fb.spoken-fb label{color:var(--accent)}
-.fb.visual-fb label{color:var(--blue)}
-textarea{width:100%;height:88px;min-height:88px;max-height:214px;resize:none;border:1px solid var(--line-strong);border-radius:6px;background:var(--sheet);color:var(--ink);padding:12px 14px;font:14.5px/1.62 "Avenir Next","PingFang SC",sans-serif;outline:none;transition:border-color .15s,box-shadow .15s}
-textarea:focus{border-color:var(--ink);box-shadow:0 0 0 3px rgba(23,22,26,.06)}
-textarea::placeholder{color:var(--faint)}
-.overall{margin:38px 0 70px;padding:26px 28px;background:var(--sheet);border:1px solid var(--line);border-radius:6px}
-.overall h2{margin:0 0 15px;font:700 20px "Songti SC",serif}
+.fb label{display:block;margin-bottom:7px;font:var(--dsw-font-xxxs-strong-11);letter-spacing:.15em;color:var(--dsw-alias-label-tertiary)}
+.fb.spoken-fb label{color:var(--dsw-alias-label-primary)}
+.fb.visual-fb label{color:var(--dsw-alias-state-business-primary)}
+textarea{width:100%;height:88px;min-height:88px;max-height:214px;resize:none;padding:12px 14px;outline:none;
+  border:1px solid var(--dsw-alias-border-l2);border-radius:var(--dsw-radius-sm);
+  background:var(--dsw-specific-input-major);color:var(--dsw-alias-label-primary);font:var(--dsw-font-s-14);line-height:1.62;
+  transition:border-color var(--ds-transition-duration-fast) var(--ds-ease-in-out)}
+textarea:focus{border-color:var(--dsw-alias-border-l4)}
+textarea::placeholder{color:var(--dsw-alias-label-tertiary)}
+.overall{margin:38px 0 70px;padding:26px 28px;background:var(--dsw-alias-bg-layer-1);
+  border:1px solid var(--dsw-alias-border-l1);border-radius:var(--dsw-radius-md)}
+.overall h2{margin:0 0 15px;font:var(--dsw-font-l-20)}
 .overall-grid{display:grid;grid-template-columns:220px 1fr;gap:22px;align-items:start}
 .overall textarea{height:106px}
-.overall label{display:block;margin-bottom:7px;font:800 9.5px ui-monospace,monospace;letter-spacing:.15em;color:var(--faint)}
+.overall label{display:block;margin-bottom:7px;font:var(--dsw-font-xxxs-strong-11);letter-spacing:.15em;color:var(--dsw-alias-label-tertiary)}
+:focus-visible{outline:2px solid var(--dsw-static-blue-500);outline-offset:1px}
 @media(max-width:1024px){
   .stage,.feedback,.screen.no-screen .stage,.screen.no-screen .feedback{grid-template-columns:1fr}
   .stage{gap:22px}
@@ -123,6 +177,20 @@ textarea::placeholder{color:var(--faint)}
   header .meta,header .progress,.signature{display:none}
 }
 </style>
+<script>
+/* 明暗：token 表自带整套暗色。iframe 里读不到宿主偏好，跟随系统（= DSH 的 "system" 档）；
+   宿主若自己打了这个属性，这里不覆盖。画面预览始终是深色 —— 那是视频画面。 */
+(function(){
+  var apply=function(){
+    if(document.body&&!document.body.hasAttribute('data-ds-dark-theme')
+       &&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){
+      document.body.setAttribute('data-ds-dark-theme','');
+    }
+  };
+  // 这段可能出现在 <head> 里（那时还没有 body），所以要等 DOM 就绪再打属性。
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',apply);}else{apply();}
+})();
+</script>
 </head>
 <body>
 <header>

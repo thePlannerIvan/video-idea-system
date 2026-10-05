@@ -511,7 +511,25 @@ const bootstrap = {
 };
 
 const template = fs.readFileSync(templatePath, 'utf8');
-const html = template.replace('__REVIEW_BOOTSTRAP__', JSON.stringify(bootstrap).replace(/</g, '\\u003c'));
+
+// DSH 设计令牌随页面一起发：审阅页在不透明源 iframe 里，宿主的 CSS 变量继承不进来、
+// 外链样式表也会被信任围栏打回 403，所以这张表**必须内联**。表只有一份，在公共接缝
+// （planners-review-core/assets/dsh-tokens.css）—— 模板里只留 `/*__DSH_TOKENS__*/` 占位符，
+// 绝不在这里存副本（存了就会漂移，而漂移两边都不报错）。
+const { resolveModule } = await import('./lib/planners-modules.mjs');
+const tokensPath = path.join(resolveModule('planners-review-core'), 'assets', 'dsh-tokens.css');
+if (!fs.existsSync(tokensPath)) {
+  console.error(`找不到设计令牌表：${tokensPath}\n先在 planners-review-core 里跑 scripts/vendor_dsh_tokens.py 生成。`);
+  process.exit(1);
+}
+const tokens = fs.readFileSync(tokensPath, 'utf8');
+if (!template.includes('/*__DSH_TOKENS__*/')) {
+  console.error('模板里没有 /*__DSH_TOKENS__*/ 占位符 —— 会在不报错的情况下产出一张没上样式的页面，拒绝继续。');
+  process.exit(1);
+}
+const html = template
+  .replace('/*__DSH_TOKENS__*/', tokens)
+  .replace('__REVIEW_BOOTSTRAP__', JSON.stringify(bootstrap).replace(/</g, '\\u003c'));
 fs.writeFileSync(indexPath, html, 'utf8');
 
 // 收件层要知道的身份（哪些稿、哪个指纹、哪一轮被作废）：落在 surface 旁边的小文件。
