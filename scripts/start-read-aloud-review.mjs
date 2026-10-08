@@ -576,6 +576,7 @@ if (process.argv.includes('--surface-only') || process.argv.includes('--no-host'
     url: state.url,
     feedback_path: feedbackPath,
     submissions_path: reviewSurface.submissionsPath(reviewDir),
+    draft_path: reviewSurface.draftPath(reviewDir),
     source_hash: sourceHash,
     screens: screenMap.size,
     asset_roots: uniqueRoots,

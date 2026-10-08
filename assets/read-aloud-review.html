@@ -240,7 +240,7 @@ function draftStore(){try{return window.localStorage}catch(error){return null}}
 function storeGet(key){const store=draftStore();try{return store?store.getItem(key):null}catch(error){return null}}
 function storeSet(key,value){const store=draftStore();try{if(store)store.setItem(key,value)}catch(error){/* 满或不可写：草稿只是便利，不是承诺 */}}
 function storeRemove(key){const store=draftStore();try{if(store)store.removeItem(key)}catch(error){}}
-let timer=null,fontSize=Number(storeGet('video-story-reading-size')||25);
+let timer=null,fontSize=Number(storeGet('video-story-reading-size')||25),draftWrite=0;
 
 const VOCABULARY=['approve','revise','cut'];
 const STATUS_LABEL={approve:'这一段可录',revise:'需要修改',cut:'删除这一段'};
@@ -429,7 +429,28 @@ function updateProgress(){
   if(meta&&pending)meta.textContent=meta.textContent.replace(/ · \d+ 段待复核$/,'')+` · ${pending} 段待复核`;
 }
 function label(message,kind=''){const el=document.getElementById('saveState');el.textContent=message;el.className=`saved ${kind}`}
-function saveDraft(){collect();storeSet(draftKey,JSON.stringify(state));label('草稿已自动保存');updateProgress();markNav()}
+async function saveDraft(){
+  collect();
+  const payload=structuredClone(state);
+  const writeId=++draftWrite;
+  let persisted='none';
+  if(review&&Array.isArray(review.capabilities)&&review.capabilities.includes('draft')&&typeof review.draft==='function'){
+    try{await review.draft(payload);persisted='review'}catch(error){/* 回退到本地便利层 */}
+  }
+  if(persisted!=='review'&&draftStore()){
+    storeSet(draftKey,JSON.stringify(payload));
+    persisted='local';
+  }
+  if(writeId!==draftWrite)return;
+  const message=persisted==='review'?'草稿已保存到审阅目录':persisted==='local'?'草稿已暂存于本机':'宿主未提供草稿保存，刷新可能丢失未提交输入';
+  label(message,persisted==='none'?'error':'');updateProgress();markNav();
+}
+async function clearDraft(){
+  storeRemove(draftKey);
+  if(review&&Array.isArray(review.capabilities)&&review.capabilities.includes('draft')&&typeof review.draft==='function'){
+    try{await review.draft(null)}catch(error){}
+  }
+}
 // 唤醒分档（R5）：宿主"接受了" ≠ "通知到了"。无插件宿主回 woke:false，必须说出来。
 function wakeTier(woke){
   if(!woke||woke.error)return {told:false,text:'；没能通知模型（'+((woke&&woke.error)||'宿主没回话')+'）—— 请回对话说一声「已完成」'};
@@ -463,7 +484,7 @@ async function saveFile(){
     };
     await review.write({...state,reviewState});
     let woke=null;try{woke=await review.wake({unit:'整套'})}catch(error){woke={error:error.message}}
-    storeRemove(draftKey);
+    await clearDraft();
     clearTimeout(timer);
     const tier=wakeTier(woke);
     label('已交给审阅宿主（'+(review.transport||'未知通道')+'）'+tier.text,'ok');markNav();
@@ -513,6 +534,16 @@ async function hydrateAssets(root){
     try{const url=await review.asset(rel);el.setAttribute('style',style.split(match[0]).join(`url('${url}')`))}catch(error){}
   }
 }
+async function hydrateRemoteDraft(){
+  if(!review||BOOT.feedback||!Array.isArray(review.capabilities)||!review.capabilities.includes('draft'))return;
+  try{
+    const raw=await review.readText('review-draft.json');
+    const candidate=JSON.parse(raw);
+    if(candidate&&candidate.sourceHash===BOOT.sourceHash){
+      Object.assign(state,candidate);render();updateProgress();markNav();label('已恢复审阅目录里的未提交草稿');
+    }
+  }catch(error){/* 没有草稿或旧宿主不支持读取时保持当前状态 */}
+}
 let review=null;
 const BRIDGE_TIMEOUT_MS=1500;   // 握手要有上限：不返回就按"没有桥"降级继续画
 function connectWithTimeout(ms){
@@ -545,6 +576,7 @@ document.getElementById('reload').addEventListener('click',()=>location.reload()
   catch(error){ review=null; }
   if(review){
     hydrateAssets(document);                       // 资产只有宿主能给（不透明帧里取不到相对地址）
+    await hydrateRemoteDraft();
   }else{
     sayReadOnly(window.ReviewBridge
       ? '连不上审阅宿主（握手超时）：内容可以看，反馈存不进去。'

@@ -84,7 +84,7 @@
 | `scripts/render-review.py` | 候选页与脚本页两个离线 HTML 的渲染 | `ideas\|script <json> --out-dir <dir>` | 不写页面内容、不联网 |
 | `scripts/inventory-sources.mjs` | 材料清点 | `<project> --output <source-index.json>`（契约 `source-index/2.0.0`，公共件 `planners-source-index`） | 不读内容、不做事实判断、**不给未读文件算哈希** |
 | `scripts/start-read-aloud-review.mjs` | **生成**审阅页与样张素材本地化、指纹与作废、写 surface；起停宿主交给公共模组 | CLI：`--script`／`--visual-plan`／`--review-dir`／`--asset-root`／`--port`／`--no-open`／`--surface-only` | 不做页面内录音、不生成反馈、不替作者保存、**不自己起服务器** |
-| `scripts/review-surface.mjs` | 这份审阅面的 surface 文档 + 写盘 + 走唯一校验器 | 被 `start-read-aloud-review.mjs` 调用；`--review-dir` 可直接跑 | 不做业务判断、不认识 Beat |
+| `scripts/review-surface.mjs` | 这份审阅面的 surface 文档 + `feedback`／`draft` 路径 + 走唯一校验器 | 被 `start-read-aloud-review.mjs` 调用；`--review-dir` 可直接跑 | 不做业务判断、不认识 Beat |
 | `scripts/review-inbox.mjs` | 收件：把宿主落的提交翻译成原生 `feedback.json`，把前提带进收据 | `--surface <review-surface.json>` | 不改提交的语义、不解释审的什么 |
 | `scripts/lib/planners-modules.mjs` | 「按名字找兄弟目录」的公共模组解析适配器 | `moduleScript('planners-review-core', …)` | 不缓存、不猜路径 |
 | `scripts/check-handoff-artifacts.mjs` | 交接前的存在性核对（具名产物 + `assets/` 全等） | `--project <dir>`，退出 0／3 | 不判断内容好坏、不修改任何文件 |
