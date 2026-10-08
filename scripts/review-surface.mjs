@@ -49,7 +49,9 @@ export function surfaceDocument(reviewDir, { title = '念稿 · 样张审阅' } 
     entry: 'index.html',
     feedback: SUBMISSIONS_REL,
     wake: {
-      mode: 'queue',
+      // 插话（steer → next-step），不进持久队列：提交的语义是"现在就收件"。声明 queue 会排到
+      // 当前回合之后 —— 模型正忙时它躺在队列里，界面上同时出现「已送达」与「排队中」两份。
+      mode: 'steer',
       text: '念稿审阅有新的提交（{unit}）：先跑 scripts/review-inbox.mjs 收件'
         + '（它把提交翻译成 feedback.json，并把页面报上来的前提带进收据），'
         + '再按 stages/05-read-aloud-review-and-handoff.md 分诊反馈。',
