@@ -537,7 +537,7 @@ async function hydrateAssets(root){
 async function hydrateRemoteDraft(){
   if(!review||BOOT.feedback||!Array.isArray(review.capabilities)||!review.capabilities.includes('draft'))return;
   try{
-    const raw=await review.readText('review-draft.json');
+    const raw=await review.readText('review-draft.json',{optional:true});
     const candidate=JSON.parse(raw);
     if(candidate&&candidate.sourceHash===BOOT.sourceHash){
       Object.assign(state,candidate);render();updateProgress();markNav();label('已恢复审阅目录里的未提交草稿');
