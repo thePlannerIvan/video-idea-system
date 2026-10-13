@@ -110,7 +110,7 @@ PLANNERS_MODULES_REF=main   <你的命令>     # 钉在某个分支上
 **用户装一个 Skill** —— 用 Skills CLI，它会把条目放进各 agent 的技能目录：
 
 ```bash
-npx skills add https://github.com/thePlannerIvan/<Skill 名> --skill <Skill 名>
+npx skills add https://github.com/thePlannerIvan/video-idea-system --skill video-idea-system
 ```
 
 **Skill 自己抓一个公共模组（内部依赖）** —— 用 `git clone`，落在库外的单一安装根：
@@ -187,3 +187,7 @@ CHANGELOG.md             变更记录
 需要私有部署、企业方法库适配、定制校验器、闭源商业授权或内部培训，见 [COMMERCIAL.md](COMMERCIAL.md)。
 
 由阿祖不看 TVC 创建与维护 · https://demyth.info · Lawyif@163.com。授权和归属详见 [LICENSE](LICENSE)、[NOTICE](NOTICE)、[TRADEMARK.md](TRADEMARK.md)。安全说明见 [SECURITY.md](SECURITY.md)。
+
+## 在 DSH 中使用
+
+在 Planners Form 设置中安装本 Skill；回到对话后使用 `video-idea-system` 调用，审阅页面由 Skill 在流程需要时打开。Planners Form 安装 Skill 与公共审阅依赖；本 Skill 的脚本需要 Node.js 和 Python 3，制作阶段另由 `video-craft` 承接。
